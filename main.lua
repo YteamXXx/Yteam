@@ -15,10 +15,13 @@ local noClipFrame = Instance.new("Frame")
 local runFastButton = Instance.new("TextButton")
 local espEnabled = false
 local speedBoostEnabled = false
-local defaultWalkSpeed = 16  -- Kecepatan lari default
-local boostWalkSpeed = 50    -- Kecepatan lari saat aktif
 
 
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local camera = game.Workspace.CurrentCamera
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
 
@@ -344,36 +347,40 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "07:00:00"
 end)
 
--- Run Fast Button Functionality
-runFastButton.MouseButton1Click:Connect(function()
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-    
-    -- Pastikan humanoid ditemukan
-    if humanoid then
-        -- Toggle speedBoostEnabled dan set WalkSpeed
-        if speedBoostEnabled then
-            humanoid.WalkSpeed = defaultWalkSpeed
-            runFastButton.Text = "Lari Cepat: Off"
-        else
-            humanoid.WalkSpeed = boostWalkSpeed
-            runFastButton.Text = "Lari Cepat: On"
-        end
-        speedBoostEnabled = not speedBoostEnabled
-    else
-        -- Log pesan jika humanoid tidak ditemukan
-        warn("Humanoid not found in character")
-    end
-end)
+runFastButton.MouseButton1Click:Connect(toggleSpeed)
 
--- Pastikan kecepatan tidak diubah oleh skrip lain
-game:GetService("RunService").Stepped:Connect(function()
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-    
-    if humanoid and speedBoostEnabled then
-        humanoid.WalkSpeed = boostWalkSpeed
+-- Define initial speed values
+local OldSpeed = 16
+local NewSpeed = 70
+local speedActive = false
+
+-- Set global walk speed value
+getgenv().WalkSpeedValue = OldSpeed
+
+-- Get the player's humanoid
+local player = game.Players.LocalPlayer
+local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+if not humanoid then
+    humanoid = player.CharacterAdded:Wait():WaitForChild("Humanoid")
+end
+
+-- Update WalkSpeed with global value
+local function updateWalkSpeed()
+    if humanoid then
+        humanoid.WalkSpeed = getgenv().WalkSpeedValue
     end
-end)
+end
+
+-- Toggle speed function
+local function toggleSpeed()
+    if not speedActive then
+        getgenv().WalkSpeedValue = NewSpeed
+        runFastButton.Text = "Speed: Fast"
+        speedActive = true
+    else
+        getgenv().WalkSpeedValue = OldSpeed
+        runFastButton.Text = "Speed: Normal"
+        speedActive = false
+    end
+    updateWalkSpeed()
+end
