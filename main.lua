@@ -31,6 +31,8 @@ local speedActive = false
 
 local normalSpeed = 16
 local fastSpeed = 70
+local speedChangeRate = 0.5 -- Waktu dalam detik untuk transisi kecepatan
+
 
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
@@ -59,7 +61,7 @@ heading.TextColor3 = Color3.fromRGB(255, 255, 255)
 heading.TextSize = 24.000
 heading.TextStrokeTransparency = 0.1
 heading.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-heading.TextColor3 = Color3.fromRGB(255, 85, 85)     -- Gradient Color
+heading.TextColor3 = Color3.fromRGB(255, 85, 85) -- Gradient Color
 
 -- Sidebar Frame
 sidebarFrame.Name = "sidebarFrame"
@@ -243,7 +245,7 @@ local kingdomColors = {
     White = Color3.fromRGB(255, 255, 255),
     Gray = Color3.fromRGB(128, 128, 128),
     Black = Color3.fromRGB(0, 0, 0),
-    LightGray = Color3.fromRGB(211, 211, 211)     -- Default color for unknown kingdoms
+    LightGray = Color3.fromRGB(211, 211, 211) -- Default color for unknown kingdoms
 }
 
 -- Function to get the color based on player team or custom property
@@ -314,7 +316,7 @@ espButton.MouseButton1Click:Connect(function()
                     local marker = Instance.new("Part")
                     marker.Name = player.Name .. "_Marker"
                     marker.Parent = player.Character
-                    marker.Size = Vector3.new(1, 1, 1)     -- Small size for the dot
+                    marker.Size = Vector3.new(1, 1, 1) -- Small size for the dot
                     marker.Position = player.Character.PrimaryPart.Position + Vector3.new(0, 3, 0)
                     marker.BrickColor = BrickColor.new("Bright red")
                     marker.Anchored = true
@@ -357,26 +359,30 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
--- Function to set speed
-local function setSpeed(speed)
-    if humanoid then
-        humanoid.WalkSpeed = speed
-    end
-end
+-- Fungsi untuk mengubah kecepatan secara bertahap
+local function setSpeed(targetSpeed)
+    local currentSpeed = humanoid.WalkSpeed
+    local speedChangeStep = (targetSpeed - currentSpeed) * speedChangeRate
 
--- Function to toggle speed
+    while math.abs(currentSpeed - targetSpeed) > 0.1 do
+        currentSpeed = currentSpeed + speedChangeStep
+        humanoid.WalkSpeed = math.clamp(currentSpeed, 0, fastSpeed)
+        RunService.RenderStepped:Wait()
+    end
+
+    humanoid.WalkSpeed = targetSpeed
+end
 local function toggleSpeed()
     speedActive = not speedActive
     setSpeed(speedActive and fastSpeed or normalSpeed)
 end
-
--- Speed button functionality
+-- Fungsi tombol kecepatan
 speedButton.MouseButton1Click:Connect(function()
     toggleSpeed()
     speedButton.Text = speedActive and "Disable Speed" or "Enable Speed"
 end)
 
--- Anti-detection: Ensure consistent speed updates
+-- Fungsi anti-deteksi: memastikan kecepatan konsisten
 local function antiDetectionSpeed()
     while true do
         if humanoid then
@@ -386,10 +392,10 @@ local function antiDetectionSpeed()
     end
 end
 
--- Start the anti-detection loop
+-- Mulai loop anti-deteksi
 RunService.Heartbeat:Connect(function()
     antiDetectionSpeed()
 end)
 
--- Initialize speed
+-- Inisialisasi kecepatan
 setSpeed(normalSpeed)
