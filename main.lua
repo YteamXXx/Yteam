@@ -15,6 +15,7 @@ local noClipFrame = Instance.new("Frame")
 
 local espEnabled = false
 local player = game.Players.LocalPlayer
+local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
 local fastWalkSpeed = 70
 local speedActive = false
 
@@ -348,24 +349,16 @@ end)
 
 -- Fungsi untuk memperbarui kecepatan berjalan
 local function updateWalkSpeed()
-    if player and player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = fastWalkSpeed
+    if humanoid then
+        humanoid.WalkSpeed = fastWalkSpeed
     end
 end
 
--- Fungsi untuk mencegah reset posisi karakter
+-- Fungsi untuk mencegah reset posisi karakter dan mempertahankan network ownership
 local function preventReset()
     local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
     if humanoidRootPart then
-        local currentPosition = humanoidRootPart.Position
-        humanoidRootPart.CFrame = CFrame.new(currentPosition)
-    end
-end
-
--- Fungsi untuk mengatur network ownership ke pemain
-local function setNetworkOwnership()
-    local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
-    if humanoidRootPart then
+        humanoidRootPart.CFrame = humanoidRootPart.CFrame
         humanoidRootPart:SetNetworkOwner(player)
     end
 end
@@ -374,19 +367,22 @@ end
 game:GetService("RunService").Stepped:Connect(function()
     if speedActive then
         updateWalkSpeed()
+        preventReset()
     end
-    preventReset()
 end)
 
 -- Fungsi untuk toggle kecepatan berjalan
 local function toggleSpeed()
     speedActive = not speedActive
+    if speedActive then
+        updateWalkSpeed()
+    else
+        humanoid.WalkSpeed = 16 -- Kembali ke kecepatan default jika toggle dimatikan
+    end
 end
 
 -- Event untuk mengatur ulang ketika karakter respawn
 player.CharacterAdded:Connect(function(character)
-    local humanoid = character:WaitForChild("Humanoid")
+    humanoid = character:WaitForChild("Humanoid")
     speedActive = false -- reset saat karakter respawn
-    setNetworkOwnership() -- Atur network ownership lagi
 end)
-
