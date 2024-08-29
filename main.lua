@@ -388,11 +388,27 @@ local function smoothSpeedAdjustment()
     local targetSpeed = speedActive and fastSpeed or normalSpeed
     local currentSpeed = humanoid.WalkSpeed
     local speedDifference = targetSpeed - currentSpeed
-    local speedIncrement = speedDifference * 0.1 -- Adjust the increment for smoother transition
+    local speedIncrement = speedDifference * 0.05 -- Gradual adjustment for less detectability
 
+    -- Apply gradual speed adjustment
     if math.abs(speedDifference) > 0.1 then
         setWalkSpeed(currentSpeed + speedIncrement)
     end
 end
-RunService.Heartbeat:Connect(smoothSpeedAdjustment)
+
+-- Ensure speed is always within acceptable bounds
+local function monitorSpeed()
+    local targetSpeed = speedActive and fastSpeed or normalSpeed
+    if humanoid.WalkSpeed > targetSpeed + 5 then
+        setWalkSpeed(targetSpeed) -- Adjust speed if it goes beyond expected range
+    end
+end
+
+-- Update speed smoothly and monitor it
+RunService.Heartbeat:Connect(function()
+    smoothSpeedAdjustment()
+    monitorSpeed()
+end)
+
+-- Speed Button functionality
 speedButton.MouseButton1Click:Connect(toggleSpeed)
