@@ -353,62 +353,53 @@ end)
 
 
 
-local function onRenderStep()
-    if player.Character then
-        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
-        end
-    end
-end
-RunService.RenderStepped:Connect(onRenderStep)
-local function getHumanoid()
-    local character = game.Players.LocalPlayer.Character
-    if character then
-        return character:FindFirstChildOfClass("Humanoid")
-    end
-    return nil
-end
+-- local function onRenderStep()
+--     if player.Character then
+--         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+--         if humanoid then
+--             humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
+--         end
+--     end
+-- end
+-- RunService.RenderStepped:Connect(onRenderStep)
+-- local function getHumanoid()
+--     local character = game.Players.LocalPlayer.Character
+--     if character then
+--         return character:FindFirstChildOfClass("Humanoid")
+--     end
+--     return nil
+-- end
 
--- Function to set walk speed smoothly
-local function setWalkSpeed(targetSpeed)
-    if humanoid then
-        humanoid.WalkSpeed = targetSpeed
-    end
-end
-
--- Function to toggle speed
-local function toggleSpeed()
+-- Speed Button Functionality
+speedButton.MouseButton1Click:Connect(function()
     speedActive = not speedActive
-    setWalkSpeed(speedActive and fastSpeed or normalSpeed)
-end
-
--- Smooth speed adjustment
-local function smoothSpeedAdjustment()
-    local targetSpeed = speedActive and fastSpeed or normalSpeed
-    local currentSpeed = humanoid.WalkSpeed
-    local speedDifference = targetSpeed - currentSpeed
-    local speedIncrement = speedDifference * 0.05 -- Gradual adjustment for less detectability
-
-    -- Apply gradual speed adjustment
-    if math.abs(speedDifference) > 0.1 then
-        setWalkSpeed(currentSpeed + speedIncrement)
-    end
-end
-
--- Ensure speed is always within acceptable bounds
-local function monitorSpeed()
-    local targetSpeed = speedActive and fastSpeed or normalSpeed
-    if humanoid.WalkSpeed > targetSpeed + 5 then
-        setWalkSpeed(targetSpeed) -- Adjust speed if it goes beyond expected range
-    end
-end
-
--- Update speed smoothly and monitor it
-RunService.Heartbeat:Connect(function()
-    smoothSpeedAdjustment()
-    monitorSpeed()
+    speedButton.Text = speedActive and "Speed On" or "Toggle Speed"
+    humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
 end)
+-- Smooth Speed Increase Functionality
+local function setWalkSpeed(speed)
+    local currentSpeed = humanoid.WalkSpeed
+    local delta = (speed - currentSpeed) / 10
+    for i = 1, 10 do
+        RunService.RenderStepped:Wait()
+        humanoid.WalkSpeed = currentSpeed + delta * i
+    end
+end
 
--- Speed Button functionality
-speedButton.MouseButton1Click:Connect(toggleSpeed)
+-- Apply the speed change gradually
+local function updateWalkSpeed()
+    if speedActive then
+        setWalkSpeed(fastSpeed)
+    else
+        setWalkSpeed(normalSpeed)
+    end
+end
+
+-- Ensure smooth character movement
+RunService.RenderStepped:Connect(function()
+    if speedActive then
+        updateWalkSpeed()
+    else
+        setWalkSpeed(normalSpeed)
+    end
+end)
