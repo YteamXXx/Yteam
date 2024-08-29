@@ -12,11 +12,12 @@ local homeFrame = Instance.new("Frame")
 local visualFrame = Instance.new("Frame")
 local espButton = Instance.new("TextButton")
 local noClipFrame = Instance.new("Frame")
-local runFastButton = Instance.new("TextButton")
+
 local espEnabled = false
 local speedBoostEnabled = false
 local OldSpeed = 16
 local NewSpeed = 70
+local player = game.Players.LocalPlayer
 
 
 
@@ -164,6 +165,7 @@ dayNightButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 dayNightButton.TextSize = 20.000
 
 -- Run Fast Button
+local toggleButton = Instance.new("TextButton")
 runFastButton.Name = "runFastButton"
 runFastButton.Parent = noClipFrame
 runFastButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -346,25 +348,44 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
--- Run Fast Button Functionality
-runFastButton.MouseButton1Click:Connect(function()
-    speedBoostEnabled = not speedBoostEnabled
-    if speedBoostEnabled then
-        runFastButton.Text = "Speed: Fast"
-        updateWalkSpeed(NewSpeed)
-    else
-        runFastButton.Text = "Speed: Normal"
-        updateWalkSpeed(OldSpeed)
-    end
-end)
-
--- Function to Update Walk Speed
-function updateWalkSpeed(speed)
-    local player = game.Players.LocalPlayer
+-- Fungsi untuk update kecepatan berjalan
+local function updateWalkSpeed(speed)
     local character = player.Character
     if character and character:FindFirstChild("Humanoid") then
         character.Humanoid.WalkSpeed = speed
-    else
-        print("Humanoid not found!")
     end
+end
+
+-- Fungsi untuk mengatur kecepatan saat karakter dimuat
+local function onCharacterAdded(character)
+    -- Tunggu hingga Humanoid tersedia
+    local humanoid = character:WaitForChild("Humanoid")
+    if humanoid then
+        updateWalkSpeed(speedBoostEnabled and NewSpeed or OldSpeed)
+    end
+end
+
+-- Fungsi untuk mengubah status kecepatan saat tombol diklik
+local function toggleSpeed()
+    speedBoostEnabled = not speedBoostEnabled
+    toggleButton.Text = speedBoostEnabled and "Speed: Fast" or "Speed: Normal"
+    updateWalkSpeed(speedBoostEnabled and NewSpeed or OldSpeed)
+end
+
+-- Menghubungkan fungsi ke tombol
+toggleButton.MouseButton1Click:Connect(toggleSpeed)
+
+-- Menangani karakter baru saat masuk
+player.CharacterAdded:Connect(onCharacterAdded)
+
+-- Menangani karakter saat dihapus
+player.CharacterRemoving:Connect(function()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = OldSpeed
+    end
+end)
+
+-- Set kecepatan awal saat karakter sudah ada
+if player.Character then
+    onCharacterAdded(player.Character)
 end
