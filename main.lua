@@ -351,13 +351,7 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
-local function setWalkSpeed(speed)
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid.WalkSpeed = speed
-    end
-end
+
 
 local function onRenderStep()
     if player.Character then
@@ -376,15 +370,29 @@ local function getHumanoid()
     return nil
 end
 
-local function setWalkSpeed(speed)
-    local humanoid = getHumanoid()
+-- Function to set walk speed smoothly
+local function setWalkSpeed(targetSpeed)
     if humanoid then
-        humanoid.WalkSpeed = speed
+        humanoid.WalkSpeed = targetSpeed
     end
 end
 
+-- Function to toggle speed
 local function toggleSpeed()
     speedActive = not speedActive
     setWalkSpeed(speedActive and fastSpeed or normalSpeed)
 end
+
+-- Smooth speed adjustment
+local function smoothSpeedAdjustment()
+    local targetSpeed = speedActive and fastSpeed or normalSpeed
+    local currentSpeed = humanoid.WalkSpeed
+    local speedDifference = targetSpeed - currentSpeed
+    local speedIncrement = speedDifference * 0.1 -- Adjust the increment for smoother transition
+
+    if math.abs(speedDifference) > 0.1 then
+        setWalkSpeed(currentSpeed + speedIncrement)
+    end
+end
+RunService.Heartbeat:Connect(smoothSpeedAdjustment)
 speedButton.MouseButton1Click:Connect(toggleSpeed)
