@@ -20,8 +20,8 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local normalWalkSpeed = 16 -- Normal speed
 local boostedWalkSpeed = 70 -- Target speed
-local increment = 2 -- Increment per step
-local delayTime = 0.1 -- Delay between increments
+local increment = 0.5 -- Smaller increment per step
+local delayTime = 0.01 -- Shorter delay between increments
 
 
 
@@ -351,15 +351,19 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
--- Function to gradually change the walk speed
+-- Function to gradually change the walk speed using CFrame for smooth movement
 local function gradualChangeSpeed(targetSpeed)
-    while humanoid.WalkSpeed ~= targetSpeed do
-        -- Increase or decrease the speed depending on the target
+    while math.abs(humanoid.WalkSpeed - targetSpeed) > increment do
         if humanoid.WalkSpeed < targetSpeed then
-            humanoid.WalkSpeed = math.min(humanoid.WalkSpeed + increment, targetSpeed)
-        else
-            humanoid.WalkSpeed = math.max(humanoid.WalkSpeed - increment, targetSpeed)
+            humanoid.WalkSpeed = humanoid.WalkSpeed + increment
+        elseif humanoid.WalkSpeed > targetSpeed then
+            humanoid.WalkSpeed = humanoid.WalkSpeed - increment
         end
+        
+        -- Smooth movement using CFrame
+        local currentPos = character.HumanoidRootPart.Position
+        character:SetPrimaryPartCFrame(CFrame.new(currentPos) + character.HumanoidRootPart.CFrame.LookVector * humanoid.WalkSpeed * increment * delayTime)
+        
         wait(delayTime)
     end
 end
@@ -367,12 +371,10 @@ end
 -- Function to toggle speed
 local function toggleSpeed()
     if speedActive then
-        -- Gradually revert to normal speed
         gradualChangeSpeed(normalWalkSpeed)
         speedActive = false
         speedButton.Text = "Enable Speed"
     else
-        -- Gradually set boosted speed
         gradualChangeSpeed(boostedWalkSpeed)
         speedActive = true
         speedButton.Text = "Disable Speed"
