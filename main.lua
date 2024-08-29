@@ -1,3 +1,8 @@
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- GUI Elements
 local yteamGUI = Instance.new("ScreenGui")
 local mainFrame = Instance.new("Frame")
 local heading = Instance.new("TextLabel")
@@ -12,17 +17,10 @@ local homeFrame = Instance.new("Frame")
 local visualFrame = Instance.new("Frame")
 local espButton = Instance.new("TextButton")
 local noClipFrame = Instance.new("Frame")
+local speedButton = Instance.new("TextButton")
 
 local espEnabled = false
 local speedActive = false
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local normalWalkSpeed = 16 -- Normal speed
-local boostedWalkSpeed = 70 -- Target speed
-local increment = 0.5 -- Smaller increment per step
-local delayTime = 0.01 -- Shorter delay between increments
-
 
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
@@ -167,7 +165,6 @@ dayNightButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 dayNightButton.TextSize = 20.000
 
 -- lari cepat
-local speedButton = Instance.new("TextButton")
 speedButton.Name = "speedButton"
 speedButton.Parent = noClipFrame
 speedButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -177,7 +174,6 @@ speedButton.Font = Enum.Font.SourceSans
 speedButton.Text = "Toggle Speed"
 speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.TextSize = 20.000
-speedButton.MouseButton1Click:Connect(toggleSpeed)
 
 -- Toggle State
 local minimized = false
@@ -351,35 +347,17 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
--- Function to gradually change the walk speed using CFrame for smooth movement
-local function gradualChangeSpeed(targetSpeed)
-    while math.abs(humanoid.WalkSpeed - targetSpeed) > increment do
-        if humanoid.WalkSpeed < targetSpeed then
-            humanoid.WalkSpeed = humanoid.WalkSpeed + increment
-        elseif humanoid.WalkSpeed > targetSpeed then
-            humanoid.WalkSpeed = humanoid.WalkSpeed - increment
-        end
-        
-        -- Smooth movement using CFrame
-        local currentPos = character.HumanoidRootPart.Position
-        character:SetPrimaryPartCFrame(CFrame.new(currentPos) + character.HumanoidRootPart.CFrame.LookVector * humanoid.WalkSpeed * increment * delayTime)
-        
-        wait(delayTime)
-    end
-end
-
--- Function to toggle speed
+--  Speed Toggle Function
 local function toggleSpeed()
+    speedActive = not speedActive
     if speedActive then
-        gradualChangeSpeed(normalWalkSpeed)
-        speedActive = false
-        speedButton.Text = "Enable Speed"
+        humanoid.WalkSpeed = 70  -- Speed boost value
+        speedButton.Text = "Speed: ON"
     else
-        gradualChangeSpeed(boostedWalkSpeed)
-        speedActive = true
-        speedButton.Text = "Disable Speed"
+        humanoid.WalkSpeed = 16  -- Normal speed value
+        speedButton.Text = "Speed: OFF"
     end
 end
 
--- Connect the speed button to the toggleSpeed function
+-- Connect Speed Button Function
 speedButton.MouseButton1Click:Connect(toggleSpeed)
