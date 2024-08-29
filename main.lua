@@ -12,7 +12,9 @@ local homeFrame = Instance.new("Frame")
 local visualFrame = Instance.new("Frame")
 local espButton = Instance.new("TextButton")
 local noClipFrame = Instance.new("Frame")
+local runFastButton = Instance.new("TextButton")
 local espEnabled = false
+local speedBoostEnabled = false
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
 
@@ -154,6 +156,17 @@ dayNightButton.Font = Enum.Font.SourceSans
 dayNightButton.Text = "Alwways Monring"
 dayNightButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 dayNightButton.TextSize = 20.000
+
+-- Run Fast Button
+runFastButton.Name = "runFastButton"
+runFastButton.Parent = noClipFrame
+runFastButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+runFastButton.Position = UDim2.new(0.5, -75, 0, 80)
+runFastButton.Size = UDim2.new(0, 150, 0, 50)
+runFastButton.Font = Enum.Font.SourceSans
+runFastButton.Text = "Lari Cepat"
+runFastButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+runFastButton.TextSize = 20.000
 
 -- Toggle State
 local minimized = false
@@ -325,4 +338,30 @@ local lighting = game:GetService("Lighting")
 lighting.TimeOfDay = "07:00:00"
 lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "07:00:00"
+end)
+
+-- No Clip Button Functionality
+noClipButton.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if character then
+        for _, part in pairs(character:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = not part.CanCollide
+            end
+        end
+    end
+end)
+
+-- Run Fast Button Functionality
+runFastButton.MouseButton1Click:Connect(function()
+    speedBoostEnabled = not speedBoostEnabled
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = speedBoostEnabled and 50 or 16  -- Adjust the speed values as needed
+        end
+    end
 end)
