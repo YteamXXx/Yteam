@@ -372,6 +372,8 @@ local function setSpeed(targetSpeed)
 
     humanoid.WalkSpeed = targetSpeed
 end
+
+-- Fungsi untuk toggle kecepatan
 local function toggleSpeed()
     speedActive = not speedActive
     setSpeed(speedActive and fastSpeed or normalSpeed)
