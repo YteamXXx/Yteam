@@ -2,7 +2,12 @@ local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
+
+-- Ensure the humanoid is valid and the player is in the game
+if not humanoid then
+    player.CharacterAdded:Wait()
+    humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+end
 
 -- GUI Elements
 local yteamGUI = Instance.new("ScreenGui")
@@ -352,20 +357,39 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
--- Toggle Speed
-speedButton.MouseButton1Click:Connect(function()
-    speedActive = not speedActive
-    humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
-    speedButton.Text = speedActive and "Speed On" or "Speed Off"
-end)
-
--- Smooth Speed Adjustment
-local function adjustSpeed()
-    if speedActive then
-        humanoid.WalkSpeed = math.min(humanoid.WalkSpeed + (fastSpeed - humanoid.WalkSpeed) * 0.1, fastSpeed)
-    else
-        humanoid.WalkSpeed = math.max(humanoid.WalkSpeed - (humanoid.WalkSpeed - normalSpeed) * 0.1, normalSpeed)
+-- Function to set speed
+local function setSpeed(speed)
+    if humanoid then
+        humanoid.WalkSpeed = speed
     end
 end
 
-RunService.RenderStepped:Connect(adjustSpeed)
+-- Function to toggle speed
+local function toggleSpeed()
+    speedActive = not speedActive
+    setSpeed(speedActive and fastSpeed or normalSpeed)
+end
+
+-- Speed button functionality
+speedButton.MouseButton1Click:Connect(function()
+    toggleSpeed()
+    speedButton.Text = speedActive and "Disable Speed" or "Enable Speed"
+end)
+
+-- Anti-detection: Ensure consistent speed updates
+local function antiDetectionSpeed()
+    while true do
+        if humanoid then
+            humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
+        end
+        RunService.RenderStepped:Wait()
+    end
+end
+
+-- Start the anti-detection loop
+RunService.Heartbeat:Connect(function()
+    antiDetectionSpeed()
+end)
+
+-- Initialize speed
+setSpeed(normalSpeed)
