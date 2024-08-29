@@ -343,23 +343,24 @@ end)
 
 -- Run Fast Button Functionality
 runFastButton.MouseButton1Click:Connect(function()
-    speedBoostEnabled = not speedBoostEnabled
+    -- Dapatkan pemain dan karakternya
     local player = game.Players.LocalPlayer
     local character = player.Character
-    if character then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            if speedBoostEnabled then
-                humanoid.WalkSpeed = 50
-                runFastButton.Text = "Lari Cepat: On"
-            else
-                humanoid.WalkSpeed = 16
-                runFastButton.Text = "Lari Cepat: Off"
-            end
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    
+    -- Pastikan humanoid ditemukan
+    if humanoid then
+        -- Toggle speedBoostEnabled dan set WalkSpeed
+        speedBoostEnabled = not speedBoostEnabled
+        if speedBoostEnabled then
+            humanoid.WalkSpeed = 50
+            runFastButton.Text = "Lari Cepat: On"
         else
-            warn("Humanoid not found in character")
+            humanoid.WalkSpeed = 16
+            runFastButton.Text = "Lari Cepat: Off"
         end
     else
-        warn("Character not found")
+        -- Log pesan jika humanoid tidak ditemukan
+        warn("Humanoid not found in character")
     end
 end)
