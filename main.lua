@@ -2,6 +2,7 @@ local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 -- GUI Elements
 local yteamGUI = Instance.new("ScreenGui")
@@ -351,34 +352,29 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
-
-
-local function onRenderStep()
-    if player.Character then
-        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
-        end
-    end
-end
-RunService.RenderStepped:Connect(onRenderStep)
-local function getHumanoid()
-    local character = game.Players.LocalPlayer.Character
-    if character then
-        return character:FindFirstChildOfClass("Humanoid")
-    end
-    return nil
-end
-
-local function setWalkSpeed(speed)
-    local humanoid = getHumanoid()
-    if humanoid then
-        humanoid.WalkSpeed = speed
-    end
-end
-
-local function toggleSpeed()
+-- Toggle Speed
+speedButton.MouseButton1Click:Connect(function()
     speedActive = not speedActive
-    setWalkSpeed(speedActive and fastSpeed or normalSpeed)
+    local targetSpeed = speedActive and fastSpeed or normalSpeed
+    tweenWalkSpeed(targetSpeed)
+    speedButton.Text = speedActive and "Speed On" or "Speed Off"
+end)
+
+-- Adjust Walk Speed Smoothly
+local function tweenWalkSpeed(targetSpeed)
+    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
+    local goal = {WalkSpeed = targetSpeed}
+    local tween = TweenService:Create(humanoid, tweenInfo, goal)
+    tween:Play()
 end
-speedButton.MouseButton1Click:Connect(toggleSpeed)
+
+-- Smooth Speed Adjustment
+local function adjustSpeed()
+    if speedActive then
+        humanoid.WalkSpeed = math.min(humanoid.WalkSpeed + (fastSpeed - humanoid.WalkSpeed) * 0.1, fastSpeed)
+    else
+        humanoid.WalkSpeed = math.max(humanoid.WalkSpeed - (humanoid.WalkSpeed - normalSpeed) * 0.1, normalSpeed)
+    end
+end
+
+RunService.RenderStepped:Connect(adjustSpeed)
