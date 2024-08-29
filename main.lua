@@ -355,18 +355,9 @@ end)
 -- Toggle Speed
 speedButton.MouseButton1Click:Connect(function()
     speedActive = not speedActive
-    local targetSpeed = speedActive and fastSpeed or normalSpeed
-    tweenWalkSpeed(targetSpeed)
+    humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
     speedButton.Text = speedActive and "Speed On" or "Speed Off"
 end)
-
--- Adjust Walk Speed Smoothly
-local function tweenWalkSpeed(targetSpeed)
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
-    local goal = {WalkSpeed = targetSpeed}
-    local tween = TweenService:Create(humanoid, tweenInfo, goal)
-    tween:Play()
-end
 
 -- Smooth Speed Adjustment
 local function adjustSpeed()
