@@ -30,7 +30,7 @@ local espEnabled = false
 local speedActive = false
 
 local normalSpeed = 16
-local fastSpeed = 70
+local fastSpeed = 50
 local speedChangeRate = 0.5 -- Waktu dalam detik untuk transisi kecepatan
 
 
