@@ -340,28 +340,31 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "07:00:00"
 end)
 
--- No Clip Button Functionality
-noClipButton.MouseButton1Click:Connect(function()
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    if character then
-        for _, part in pairs(character:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = not part.CanCollide
-            end
-        end
-    end
-end)
-
 -- Run Fast Button Functionality
 runFastButton.MouseButton1Click:Connect(function()
     speedBoostEnabled = not speedBoostEnabled
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    if character then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = speedBoostEnabled and 50 or 16  -- Adjust the speed values as needed
-        end
+    if speedBoostEnabled then
+        runFastButton.Text = "Lari Cepat: On"
+        -- Increase player speed
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        local humanoid = char:WaitForChild("Humanoid")
+        humanoid.WalkSpeed = 50 -- Increase this value as needed
+    else
+        runFastButton.Text = "Lari Cepat: Off"
+        -- Reset player speed
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        local humanoid = char:WaitForChild("Humanoid")
+        humanoid.WalkSpeed = 16 -- Default speed
+    end
+end)
+
+-- Debugging Output
+game:GetService("RunService").RenderStepped:Connect(function()
+    if speedBoostEnabled then
+        print("Speed Boost Enabled")
+    else
+        print("Speed Boost Disabled")
     end
 end)
