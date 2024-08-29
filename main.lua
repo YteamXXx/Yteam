@@ -342,29 +342,22 @@ end)
 
 -- Run Fast Button Functionality
 runFastButton.MouseButton1Click:Connect(function()
-    speedBoostEnabled = not speedBoostEnabled
-    if speedBoostEnabled then
-        runFastButton.Text = "Lari Cepat: On"
-        -- Increase player speed
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local humanoid = char:WaitForChild("Humanoid")
-        humanoid.WalkSpeed = 50 -- Increase this value as needed
-    else
-        runFastButton.Text = "Lari Cepat: Off"
-        -- Reset player speed
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local humanoid = char:WaitForChild("Humanoid")
-        humanoid.WalkSpeed = 16 -- Default speed
-    end
-end)
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
 
--- Debugging Output
-game:GetService("RunService").RenderStepped:Connect(function()
-    if speedBoostEnabled then
-        print("Speed Boost Enabled")
+    if humanoid then
+        if not speedBoostEnabled then
+            -- Aktifkan kecepatan tinggi
+            humanoid.WalkSpeed = 50 -- Ubah sesuai kebutuhan
+            runFastButton.Text = "Lari Cepat: On"
+        else
+            -- Kembalikan kecepatan normal
+            humanoid.WalkSpeed = 16 -- Kecepatan default
+            runFastButton.Text = "Lari Cepat: Off"
+        end
+        speedBoostEnabled = not speedBoostEnabled
     else
-        print("Speed Boost Disabled")
+        print("Humanoid tidak ditemukan!")
     end
 end)
