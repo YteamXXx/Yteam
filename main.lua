@@ -14,12 +14,23 @@ local espButton = Instance.new("TextButton")
 local noClipFrame = Instance.new("Frame")
 
 local espEnabled = false
-local speedActive = false
 local player = game.Players.LocalPlayer
-local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
-local fastWalkSpeed = 70
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local originalWalkSpeed = humanoid.WalkSpeed
+local speedMultiplier = 2 -- Adjust this value for how much faster you want to go
+local speedActive = false
 
-
+-- Function to toggle speed boost
+local function toggleSpeed()
+    speedActive = not speedActive
+    if speedActive then
+        originalWalkSpeed = humanoid.WalkSpeed -- Store the current walk speed
+        humanoid.WalkSpeed = originalWalkSpeed * speedMultiplier
+    else
+        humanoid.WalkSpeed = originalWalkSpeed -- Reset to original walk speed
+    end
+end
 
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
@@ -347,43 +358,9 @@ lighting.TimeOfDay = "07:00:00"
 lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
-
--- Fungsi untuk memperbarui kecepatan berjalan
-local function updateWalkSpeed()
-    if humanoid then
-        humanoid.WalkSpeed = fastWalkSpeed
-    end
-end
-
--- Fungsi untuk toggle kecepatan berjalan
-local function toggleSpeed()
-    speedActive = not speedActive
-    if speedActive then
-        updateWalkSpeed()
-    else
-        humanoid.WalkSpeed = 16 -- Kembali ke kecepatan default jika toggle dimatikan
-    end
-end
-
--- Fungsi untuk mencegah reset posisi karakter dan mempertahankan network ownership
-local function preventReset()
-    local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
-    if humanoidRootPart then
-        humanoidRootPart.CFrame = humanoidRootPart.CFrame
-        humanoidRootPart:SetNetworkOwner(player)
-    end
-end
-
--- Loop untuk terus-menerus mengatur kecepatan berjalan dan mencegah reset
-game:GetService("RunService").Stepped:Connect(function()
-    if speedActive then
-        updateWalkSpeed()
-        preventReset()
-    end
-end)
-
--- Event untuk mengatur ulang ketika karakter respawn
-player.CharacterAdded:Connect(function(character)
+-- Handle character respawn
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
     humanoid = character:WaitForChild("Humanoid")
-    speedActive = false -- reset saat karakter respawn
+    speedActive = false -- Reset speedActive on respawn
 end)
