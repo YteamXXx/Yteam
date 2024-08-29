@@ -353,53 +353,32 @@ end)
 
 
 
--- local function onRenderStep()
---     if player.Character then
---         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
---         if humanoid then
---             humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
---         end
---     end
--- end
--- RunService.RenderStepped:Connect(onRenderStep)
--- local function getHumanoid()
---     local character = game.Players.LocalPlayer.Character
---     if character then
---         return character:FindFirstChildOfClass("Humanoid")
---     end
---     return nil
--- end
+local function onRenderStep()
+    if player.Character then
+        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
+        end
+    end
+end
+RunService.RenderStepped:Connect(onRenderStep)
+local function getHumanoid()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        return character:FindFirstChildOfClass("Humanoid")
+    end
+    return nil
+end
 
--- Speed Button Functionality
-speedButton.MouseButton1Click:Connect(function()
-    speedActive = not speedActive
-    speedButton.Text = speedActive and "Speed On" or "Toggle Speed"
-    humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
-end)
--- Smooth Speed Increase Functionality
 local function setWalkSpeed(speed)
-    local currentSpeed = humanoid.WalkSpeed
-    local delta = (speed - currentSpeed) / 10
-    for i = 1, 10 do
-        RunService.RenderStepped:Wait()
-        humanoid.WalkSpeed = currentSpeed + delta * i
+    local humanoid = getHumanoid()
+    if humanoid then
+        humanoid.WalkSpeed = speed
     end
 end
 
--- Apply the speed change gradually
-local function updateWalkSpeed()
-    if speedActive then
-        setWalkSpeed(fastSpeed)
-    else
-        setWalkSpeed(normalSpeed)
-    end
+local function toggleSpeed()
+    speedActive = not speedActive
+    setWalkSpeed(speedActive and fastSpeed or normalSpeed)
 end
-
--- Ensure smooth character movement
-RunService.RenderStepped:Connect(function()
-    if speedActive then
-        updateWalkSpeed()
-    else
-        setWalkSpeed(normalSpeed)
-    end
-end)
+speedButton.MouseButton1Click:Connect(toggleSpeed)
