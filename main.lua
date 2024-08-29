@@ -347,13 +347,6 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "07:00:00"
 end)
 
-runFastButton.MouseButton1Click:Connect(toggleSpeed)
-
--- Define initial speed values
-local OldSpeed = 16
-local NewSpeed = 70
-local speedActive = false
-
 -- Set global walk speed value
 getgenv().WalkSpeedValue = OldSpeed
 
@@ -373,14 +366,17 @@ end
 
 -- Toggle speed function
 local function toggleSpeed()
-    if not speedActive then
+    if not speedBoostEnabled then
         getgenv().WalkSpeedValue = NewSpeed
         runFastButton.Text = "Speed: Fast"
-        speedActive = true
+        speedBoostEnabled = true
     else
         getgenv().WalkSpeedValue = OldSpeed
         runFastButton.Text = "Speed: Normal"
-        speedActive = false
+        speedBoostEnabled = false
     end
     updateWalkSpeed()
 end
+
+-- Connect the Run Fast Button
+runFastButton.MouseButton1Click:Connect(toggleSpeed)
