@@ -14,10 +14,11 @@ local espButton = Instance.new("TextButton")
 local noClipFrame = Instance.new("Frame")
 
 local espEnabled = false
+local speedActive = false
 local player = game.Players.LocalPlayer
 local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
 local fastWalkSpeed = 70
-local speedActive = false
+
 
 
 
@@ -165,7 +166,7 @@ dayNightButton.TextSize = 20.000
 -- lari cepat
 local speedButton = Instance.new("TextButton")
 speedButton.Name = "speedButton"
-speedButton.Parent = noClipFrame -- pastikan noClipFrame didefinisikan
+speedButton.Parent = noClipFrame
 speedButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 speedButton.Position = UDim2.new(0.5, -75, 0, 20)
 speedButton.Size = UDim2.new(0, 150, 0, 50)
@@ -354,6 +355,16 @@ local function updateWalkSpeed()
     end
 end
 
+-- Fungsi untuk toggle kecepatan berjalan
+local function toggleSpeed()
+    speedActive = not speedActive
+    if speedActive then
+        updateWalkSpeed()
+    else
+        humanoid.WalkSpeed = 16 -- Kembali ke kecepatan default jika toggle dimatikan
+    end
+end
+
 -- Fungsi untuk mencegah reset posisi karakter dan mempertahankan network ownership
 local function preventReset()
     local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
@@ -370,16 +381,6 @@ game:GetService("RunService").Stepped:Connect(function()
         preventReset()
     end
 end)
-
--- Fungsi untuk toggle kecepatan berjalan
-local function toggleSpeed()
-    speedActive = not speedActive
-    if speedActive then
-        updateWalkSpeed()
-    else
-        humanoid.WalkSpeed = 16 -- Kembali ke kecepatan default jika toggle dimatikan
-    end
-end
 
 -- Event untuk mengatur ulang ketika karakter respawn
 player.CharacterAdded:Connect(function(character)
