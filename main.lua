@@ -14,23 +14,15 @@ local espButton = Instance.new("TextButton")
 local noClipFrame = Instance.new("Frame")
 
 local espEnabled = false
+local speedActive = false
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
-local originalWalkSpeed = humanoid.WalkSpeed
-local speedMultiplier = 2 -- Adjust this value for how much faster you want to go
-local speedActive = false
+local normalWalkSpeed = 16 -- Normal speed
+local boostedWalkSpeed = 70 -- Target speed
+local increment = 2 -- Increment per step
+local delayTime = 0.1 -- Delay between increments
 
--- Function to toggle speed boost
-local function toggleSpeed()
-    speedActive = not speedActive
-    if speedActive then
-        originalWalkSpeed = humanoid.WalkSpeed -- Store the current walk speed
-        humanoid.WalkSpeed = originalWalkSpeed * speedMultiplier
-    else
-        humanoid.WalkSpeed = originalWalkSpeed -- Reset to original walk speed
-    end
-end
 
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
@@ -358,9 +350,34 @@ lighting.TimeOfDay = "07:00:00"
 lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
--- Handle character respawn
-player.CharacterAdded:Connect(function(newCharacter)
-    character = newCharacter
-    humanoid = character:WaitForChild("Humanoid")
-    speedActive = false -- Reset speedActive on respawn
-end)
+
+-- Function to gradually change the walk speed
+local function gradualChangeSpeed(targetSpeed)
+    while humanoid.WalkSpeed ~= targetSpeed do
+        -- Increase or decrease the speed depending on the target
+        if humanoid.WalkSpeed < targetSpeed then
+            humanoid.WalkSpeed = math.min(humanoid.WalkSpeed + increment, targetSpeed)
+        else
+            humanoid.WalkSpeed = math.max(humanoid.WalkSpeed - increment, targetSpeed)
+        end
+        wait(delayTime)
+    end
+end
+
+-- Function to toggle speed
+local function toggleSpeed()
+    if speedActive then
+        -- Gradually revert to normal speed
+        gradualChangeSpeed(normalWalkSpeed)
+        speedActive = false
+        speedButton.Text = "Enable Speed"
+    else
+        -- Gradually set boosted speed
+        gradualChangeSpeed(boostedWalkSpeed)
+        speedActive = true
+        speedButton.Text = "Disable Speed"
+    end
+end
+
+-- Connect the speed button to the toggleSpeed function
+speedButton.MouseButton1Click:Connect(toggleSpeed)
