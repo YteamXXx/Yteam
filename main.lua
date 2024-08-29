@@ -16,6 +16,8 @@ local runFastButton = Instance.new("TextButton")
 local espEnabled = false
 local speedBoostEnabled = false
 
+local Players = game:GetService("Players")
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
 
 -- Parent to PlayerGui
@@ -341,23 +343,21 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
 end)
 
 -- Run Fast Button Functionality
-runFastButton.MouseButton1Click:Connect(function()
-    local player = game.Players.LocalPlayer
+Players.PlayerAdded:Connect(function(player)
     local char = player.Character or player.CharacterAdded:Wait()
-    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    local humanoid = char:WaitForChild("Humanoid")
+    
+    -- Event to set walkspeed
+    local setWalkSpeedEvent = Instance.new("RemoteEvent")
+    setWalkSpeedEvent.Name = "SetWalkSpeedEvent"
+    setWalkSpeedEvent.Parent = player:WaitForChild("PlayerGui") -- Or somewhere appropriate
 
-    if humanoid then
-        if not speedBoostEnabled then
-            -- Aktifkan kecepatan tinggi
-            humanoid.WalkSpeed = 50 -- Ubah sesuai kebutuhan
-            runFastButton.Text = "Lari Cepat: On"
+    setWalkSpeedEvent.OnServerEvent:Connect(function(player, speed)
+        -- Example: Ensure that only authorized changes are applied
+        if speed == 50 then  -- Adjust the condition as needed
+            humanoid.WalkSpeed = speed
         else
-            -- Kembalikan kecepatan normal
-            humanoid.WalkSpeed = 16 -- Kecepatan default
-            runFastButton.Text = "Lari Cepat: Off"
+            humanoid.WalkSpeed = 16
         end
-        speedBoostEnabled = not speedBoostEnabled
-    else
-        print("Humanoid tidak ditemukan!")
-    end
+    end)
 end)
