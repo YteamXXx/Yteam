@@ -26,7 +26,6 @@ local espButton = Instance.new("TextButton")
 local noClipFrame = Instance.new("Frame")
 local speedButton = Instance.new("TextButton")
 
-
 local espEnabled = false
 local speedActive = false
 
@@ -36,11 +35,7 @@ local speedChangeRate = 0.5 -- Waktu dalam detik untuk transisi kecepatan
 
 
 
--- Load weapon data
-local weaponData = loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
-
--- Define item type
-local itemType = "MELEE_WEAPON"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
 
 -- Parent to PlayerGui
 yteamGUI.Name = "yteamGUI"
@@ -191,17 +186,6 @@ speedButton.Font = Enum.Font.SourceSans
 speedButton.Text = "Toggle Speed"
 speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.TextSize = 20.000
-
--- Kill Aura Button
-killAuraButton.Name = "killAuraButton"
-killAuraButton.Parent = noClipFrame
-killAuraButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-killAuraButton.Position = UDim2.new(0.5, -75, 0, 20)
-killAuraButton.Size = UDim2.new(0, 150, 0, 50)
-killAuraButton.Font = Enum.Font.SourceSans
-killAuraButton.Text = "Kill Aura V1"
-killAuraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-killAuraButton.TextSize = 20.000
 
 -- Toggle State
 local minimized = false
@@ -415,45 +399,3 @@ end)
 
 -- Inisialisasi kecepatan
 setSpeed(normalSpeed)
-
--- Function to attack nearby players
-local function attackNearbyPlayers()
-    local character = game.Players.LocalPlayer.Character
-    if not character then return end
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    if not humanoidRootPart then return end
-
-    local meleeWeapon = getMeleeWeapon()
-    if not meleeWeapon then return end
-
-    -- Iterate through all players
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local targetHumanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
-            if targetHumanoidRootPart then
-                local distance = (humanoidRootPart.Position - targetHumanoidRootPart.Position).magnitude
-                -- Check if player is within melee range
-                if distance <= meleeWeapon.Range then
-                    -- Perform the attack
-                    local tool = Instance.new("Tool")
-                    tool.Name = meleeWeapon.Name
-                    tool.Parent = character
-                    character.Humanoid:EquipTool(tool)
-
-                    -- Simulate attack (actual attack logic will depend on the game)
-                    tool.Activated:Connect(function()
-                        targetHumanoidRootPart.Parent:FindFirstChildOfClass("Humanoid"):TakeDamage(meleeWeapon.Damage)
-                    end)
-
-                    -- Cleanup
-                    tool:Destroy()
-                end
-            end
-        end
-    end
-end
-
--- Kill Aura Button Functionality
-killAuraButton.MouseButton1Click:Connect(function()
-    attackNearbyPlayers()
-end)
