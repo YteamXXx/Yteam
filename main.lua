@@ -364,5 +364,7 @@ function updateWalkSpeed(speed)
     local character = player.Character
     if character and character:FindFirstChild("Humanoid") then
         character.Humanoid.WalkSpeed = speed
+    else
+        print("Humanoid not found!")
     end
 end
