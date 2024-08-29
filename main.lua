@@ -14,12 +14,9 @@ local espButton = Instance.new("TextButton")
 local noClipFrame = Instance.new("Frame")
 
 local espEnabled = false
-local speedBoostEnabled = false
-local OldSpeed = 16
-local NewSpeed = 70
 local player = game.Players.LocalPlayer
-
-
+local fastWalkSpeed = 70
+local speedActive = false
 
 
 
@@ -164,17 +161,18 @@ dayNightButton.Text = "Alwways Monring"
 dayNightButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 dayNightButton.TextSize = 20.000
 
--- Run Fast Button
-local toggleButton = Instance.new("TextButton")
-runFastButton.Name = "runFastButton"
-runFastButton.Parent = noClipFrame
-runFastButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-runFastButton.Position = UDim2.new(0.5, -75, 0, 80)
-runFastButton.Size = UDim2.new(0, 150, 0, 50)
-runFastButton.Font = Enum.Font.SourceSans
-runFastButton.Text = "Speed: Normal"
-runFastButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-runFastButton.TextSize = 20.000
+-- lari cepat
+local speedButton = Instance.new("TextButton")
+speedButton.Name = "speedButton"
+speedButton.Parent = noClipFrame -- pastikan noClipFrame didefinisikan
+speedButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+speedButton.Position = UDim2.new(0.5, -75, 0, 20)
+speedButton.Size = UDim2.new(0, 150, 0, 50)
+speedButton.Font = Enum.Font.SourceSans
+speedButton.Text = "Toggle Speed"
+speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedButton.TextSize = 20.000
+speedButton.MouseButton1Click:Connect(toggleSpeed)
 
 -- Toggle State
 local minimized = false
@@ -348,44 +346,47 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
--- Fungsi untuk update kecepatan berjalan
-local function updateWalkSpeed(speed)
-    local character = player.Character
-    if character and character:FindFirstChild("Humanoid") then
-        character.Humanoid.WalkSpeed = speed
+-- Fungsi untuk memperbarui kecepatan berjalan
+local function updateWalkSpeed()
+    if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = fastWalkSpeed
     end
 end
 
--- Fungsi untuk mengatur kecepatan saat karakter dimuat
-local function onCharacterAdded(character)
-    -- Tunggu hingga Humanoid tersedia
-    local humanoid = character:WaitForChild("Humanoid")
-    if humanoid then
-        updateWalkSpeed(speedBoostEnabled and NewSpeed or OldSpeed)
+-- Fungsi untuk mencegah reset posisi karakter
+local function preventReset()
+    local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+    if humanoidRootPart then
+        local currentPosition = humanoidRootPart.Position
+        humanoidRootPart.CFrame = CFrame.new(currentPosition)
     end
 end
 
--- Fungsi untuk mengubah status kecepatan saat tombol diklik
-local function toggleSpeed()
-    speedBoostEnabled = not speedBoostEnabled
-    toggleButton.Text = speedBoostEnabled and "Speed: Fast" or "Speed: Normal"
-    updateWalkSpeed(speedBoostEnabled and NewSpeed or OldSpeed)
+-- Fungsi untuk mengatur network ownership ke pemain
+local function setNetworkOwnership()
+    local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+    if humanoidRootPart then
+        humanoidRootPart:SetNetworkOwner(player)
+    end
 end
 
--- Menghubungkan fungsi ke tombol
-toggleButton.MouseButton1Click:Connect(toggleSpeed)
-
--- Menangani karakter baru saat masuk
-player.CharacterAdded:Connect(onCharacterAdded)
-
--- Menangani karakter saat dihapus
-player.CharacterRemoving:Connect(function()
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = OldSpeed
+-- Loop untuk terus-menerus mengatur kecepatan berjalan dan mencegah reset
+game:GetService("RunService").Stepped:Connect(function()
+    if speedActive then
+        updateWalkSpeed()
     end
+    preventReset()
 end)
 
--- Set kecepatan awal saat karakter sudah ada
-if player.Character then
-    onCharacterAdded(player.Character)
+-- Fungsi untuk toggle kecepatan berjalan
+local function toggleSpeed()
+    speedActive = not speedActive
 end
+
+-- Event untuk mengatur ulang ketika karakter respawn
+player.CharacterAdded:Connect(function(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    speedActive = false -- reset saat karakter respawn
+    setNetworkOwnership() -- Atur network ownership lagi
+end)
+
