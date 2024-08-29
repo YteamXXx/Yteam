@@ -347,17 +347,29 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
---  Speed Toggle Function
+-- -- Function to set walk speed
+local function setWalkSpeed(speed)
+    local player = game.Players.LocalPlayer
+    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    
+    if humanoid then
+        humanoid.WalkSpeed = speed
+    end
+end
+
+-- Toggle speed functionality
 local function toggleSpeed()
     speedActive = not speedActive
+    
     if speedActive then
-        humanoid.WalkSpeed = 70  -- Speed boost value
+        -- Set walk speed to higher value
+        setWalkSpeed(100) -- Adjust this value as needed
         speedButton.Text = "Speed: ON"
     else
-        humanoid.WalkSpeed = 16  -- Normal speed value
+        -- Set walk speed to normal value
+        setWalkSpeed(16) -- Adjust this value as needed
         speedButton.Text = "Speed: OFF"
     end
 end
 
--- Connect Speed Button Function
 speedButton.MouseButton1Click:Connect(toggleSpeed)
