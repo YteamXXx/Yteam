@@ -15,13 +15,12 @@ local noClipFrame = Instance.new("Frame")
 local runFastButton = Instance.new("TextButton")
 local espEnabled = false
 local speedBoostEnabled = false
+local OldSpeed = 16
+local NewSpeed = 70
 
 
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local camera = game.Workspace.CurrentCamera
+
+
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
 
@@ -171,7 +170,7 @@ runFastButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 runFastButton.Position = UDim2.new(0.5, -75, 0, 80)
 runFastButton.Size = UDim2.new(0, 150, 0, 50)
 runFastButton.Font = Enum.Font.SourceSans
-runFastButton.Text = "Lari Cepat"
+runFastButton.Text = "Speed: Normal"
 runFastButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 runFastButton.TextSize = 20.000
 
@@ -378,5 +377,5 @@ local function toggleSpeed()
     updateWalkSpeed()
 end
 
--- Connect the Run Fast Button
+-- Connect button to toggle function
 runFastButton.MouseButton1Click:Connect(toggleSpeed)
