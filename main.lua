@@ -14,6 +14,8 @@ local espButton = Instance.new("TextButton")
 local noClipFrame = Instance.new("Frame")
 local espEnabled = false
 
+loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
+
 -- Parent to PlayerGui
 yteamGUI.Name = "yteamGUI"
 yteamGUI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -317,19 +319,10 @@ espButton.MouseButton1Click:Connect(function()
         end
     end
 end)
--- Variable to track day/night state
-local isDayTime = true
 
--- Day/Night Button Functionality
-dayNightButton.MouseButton1Click:Connect(function()
-    isDayTime = not isDayTime
-    if isDayTime then
-        dayNightButton.Text = "Switch to Night"
-        -- Set time to day
-        game.Lighting.TimeOfDay = "14:00:00" -- Midday
-    else
-        dayNightButton.Text = "Switch to Day"
-        -- Set time to night
-        game.Lighting.TimeOfDay = "00:00:00" -- Midnight
-    end
+-- Constant Morning Environment
+local lighting = game:GetService("Lighting")
+lighting.TimeOfDay = "07:00:00"
+lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
+    lighting.TimeOfDay = "07:00:00"
 end)
