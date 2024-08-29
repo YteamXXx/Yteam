@@ -346,32 +346,23 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
--- Set global walk speed value
-getgenv().WalkSpeedValue = OldSpeed
-
---- Toggle Speed Functionality
-local function updateWalkSpeed()
-    local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid.WalkSpeed = speedBoostEnabled and NewSpeed or OldSpeed
-    end
-end
-
+-- Run Fast Button Functionality
 runFastButton.MouseButton1Click:Connect(function()
     speedBoostEnabled = not speedBoostEnabled
-    runFastButton.Text = speedBoostEnabled and "Speed: Fast" or "Speed: Normal"
-    updateWalkSpeed()
-end)
--- Utility Function to Refresh Speed
-local function refreshSpeed()
-    local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid.WalkSpeed = speedBoostEnabled and NewSpeed or OldSpeed
+    if speedBoostEnabled then
+        runFastButton.Text = "Speed: Fast"
+        updateWalkSpeed(NewSpeed)
+    else
+        runFastButton.Text = "Speed: Normal"
+        updateWalkSpeed(OldSpeed)
     end
-end
+end)
 
--- Continuous Update Check
-while true do
-    wait(1)
-    refreshSpeed()
+-- Function to Update Walk Speed
+function updateWalkSpeed(speed)
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.WalkSpeed = speed
+    end
 end
