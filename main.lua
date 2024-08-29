@@ -15,6 +15,9 @@ local noClipFrame = Instance.new("Frame")
 local runFastButton = Instance.new("TextButton")
 local espEnabled = false
 local speedBoostEnabled = false
+local defaultWalkSpeed = 16  -- Kecepatan lari default
+local boostWalkSpeed = 50    -- Kecepatan lari saat aktif
+
 
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
@@ -343,7 +346,6 @@ end)
 
 -- Run Fast Button Functionality
 runFastButton.MouseButton1Click:Connect(function()
-    -- Dapatkan pemain dan karakternya
     local player = game.Players.LocalPlayer
     local character = player.Character
     local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -351,16 +353,27 @@ runFastButton.MouseButton1Click:Connect(function()
     -- Pastikan humanoid ditemukan
     if humanoid then
         -- Toggle speedBoostEnabled dan set WalkSpeed
-        speedBoostEnabled = not speedBoostEnabled
         if speedBoostEnabled then
-            humanoid.WalkSpeed = 50
-            runFastButton.Text = "Lari Cepat: On"
-        else
-            humanoid.WalkSpeed = 16
+            humanoid.WalkSpeed = defaultWalkSpeed
             runFastButton.Text = "Lari Cepat: Off"
+        else
+            humanoid.WalkSpeed = boostWalkSpeed
+            runFastButton.Text = "Lari Cepat: On"
         end
+        speedBoostEnabled = not speedBoostEnabled
     else
         -- Log pesan jika humanoid tidak ditemukan
         warn("Humanoid not found in character")
+    end
+end)
+
+-- Pastikan kecepatan tidak diubah oleh skrip lain
+game:GetService("RunService").Stepped:Connect(function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    
+    if humanoid and speedBoostEnabled then
+        humanoid.WalkSpeed = boostWalkSpeed
     end
 end)
