@@ -1,6 +1,7 @@
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
+local RunService = game:GetService("RunService")
 
 -- GUI Elements
 local yteamGUI = Instance.new("ScreenGui")
@@ -21,6 +22,9 @@ local speedButton = Instance.new("TextButton")
 
 local espEnabled = false
 local speedActive = false
+
+local normalSpeed = 16
+local fastSpeed = 70
 
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
@@ -347,29 +351,40 @@ lighting:GetPropertyChangedSignal("TimeOfDay"):Connect(function()
     lighting.TimeOfDay = "12:00:00"
 end)
 
--- -- Function to set walk speed
 local function setWalkSpeed(speed)
-    local player = game.Players.LocalPlayer
-    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-    
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
     if humanoid then
         humanoid.WalkSpeed = speed
     end
 end
 
--- Toggle speed functionality
-local function toggleSpeed()
-    speedActive = not speedActive
-    
-    if speedActive then
-        -- Set walk speed to higher value
-        setWalkSpeed(100) -- Adjust this value as needed
-        speedButton.Text = "Speed: ON"
-    else
-        -- Set walk speed to normal value
-        setWalkSpeed(16) -- Adjust this value as needed
-        speedButton.Text = "Speed: OFF"
+local function onRenderStep()
+    if player.Character then
+        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
+        end
+    end
+end
+RunService.RenderStepped:Connect(onRenderStep)
+local function getHumanoid()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        return character:FindFirstChildOfClass("Humanoid")
+    end
+    return nil
+end
+
+local function setWalkSpeed(speed)
+    local humanoid = getHumanoid()
+    if humanoid then
+        humanoid.WalkSpeed = speed
     end
 end
 
+local function toggleSpeed()
+    speedActive = not speedActive
+    setWalkSpeed(speedActive and fastSpeed or normalSpeed)
+end
 speedButton.MouseButton1Click:Connect(toggleSpeed)
