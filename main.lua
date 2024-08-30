@@ -193,7 +193,7 @@ speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.TextSize = 20.000
 
 -- Kill Aura Button
-killaurav1aButton.Name = "killaurav1aButton"
+killaurav1aButton.Name = "killAuraButton"
 killaurav1aButton.Parent = visualFrame
 killaurav1aButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 killaurav1aButton.Position = UDim2.new(0.5, -75, 0, 140)
