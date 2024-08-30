@@ -34,11 +34,11 @@ local speedActive = false
 local killAuraActive = false
 
 local normalSpeed = 16
-local fastSpeed = 30
+local fastSpeed = 50
 local speedChangeRate = 0.5 -- Waktu dalam detik untuk transisi kecepatan
 
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
+local items = loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
 
 
 
@@ -418,43 +418,59 @@ end)
 -- Inisialisasi kecepatan
 setSpeed(normalSpeed)
 
--- Radius dan Damage untuk Kill Aura
-local killAuraRadius = 30
-local killAuraDamage = 60
+-- Konfigurasi
+local killAuraRadius = 50  -- Jangkauan kill aura
+local flySpeed = 100  -- Kecepatan 'terbang'
 
--- Fungsi untuk menghancurkan objek dalam radius
-local function destroyObjectsInRadius()
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("Model") or obj:IsA("Part") then
-            local distance = (obj.Position - humanoidRootPart.Position).Magnitude
-            if distance <= killAuraRadius and obj ~= character then
-                if obj:IsA("Model") and obj:FindFirstChild("Humanoid") then
-                    obj.Humanoid.Health = obj.Humanoid.Health - killAuraDamage
-                else
-                    obj:Destroy()  -- Hancurkan bangunan, pohon, rumput, dll
-                end
-            end
+-- Fungsi untuk membunuh musuh
+local function instaKillEnemy(enemy)
+    if enemy and enemy:FindFirstChild("Humanoid") then
+        enemy.Humanoid.Health = 0  -- Bunuh musuh dengan instan
+    end
+end
+
+-- Fungsi untuk simulasi terbang ke musuh dan membunuhnya
+local function flyToEnemy(enemy)
+    if enemy and enemy:FindFirstChild("HumanoidRootPart") then
+        local playerCharacter = game.Players.LocalPlayer.Character
+        local humanoidRootPart = playerCharacter:FindFirstChild("HumanoidRootPart")
+
+        -- Simulasikan terbang dengan mengatur CFrame karakter
+        if humanoidRootPart then
+            humanoidRootPart.CFrame = CFrame.new(enemy.HumanoidRootPart.Position) * CFrame.new(0, 5, 0)  -- Sedikit lebih tinggi dari musuh
+            wait(0.1)  -- Waktu untuk berpindah ke posisi target
+            instaKillEnemy(enemy)
         end
     end
 end
--- Event untuk mengaktifkan Kill Aura secara berkala
-RunService.Heartbeat:Connect(function()
-    destroyObjectsInRadius()
-end)
 
--- Fungsi untuk toggle Kill Aura
-killAuraButton.MouseButton1Click:Connect(function()
+-- Fungsi utama untuk kill aura
+local function activateKillAura()
+    while killAuraActive do
+        local playerPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+
+        -- Temukan semua musuh di sekitar
+        for _, target in pairs(workspace:GetChildren()) do
+            if target:IsA("Model") and target:FindFirstChild("Humanoid") then
+                local distance = (target.HumanoidRootPart.Position - playerPosition).Magnitude
+
+                if distance <= killAuraRadius then
+                    flyToEnemy(target)
+                    wait(0.5)  -- Berikan waktu untuk berpindah ke musuh berikutnya
+                end
+            end
+        end
+
+        wait(1)  -- Tunggu sebentar sebelum iterasi berikutnya
+    end
+end
+
+-- Fungsi untuk toggle kill aura
+local function toggleKillAura()
     killAuraActive = not killAuraActive
     if killAuraActive then
-        killAuraButton.Text = "Kill Aura [ON]"
-    else
-        killAuraButton.Text = "Kill Aura [OFF]"
+        activateKillAura()
     end
-end)
+end
 
--- Pengkondisian untuk menjalankan Kill Aura hanya saat aktif
-RunService.Heartbeat:Connect(function()
-    if killAuraActive then
-        destroyObjectsInRadius()
-    end
-end)
+killAuraButton.MouseButton1Click:Connect(toggleKillAura)
