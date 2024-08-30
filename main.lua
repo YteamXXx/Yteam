@@ -2,7 +2,6 @@ local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
 
 -- Ensure the humanoid is valid and the player is in the game
 if not humanoid then
@@ -32,24 +31,16 @@ local killaurav1aButton = Instance.new("TextButton")
 
 local espEnabled = false
 local speedActive = false
-local killaurav1active = false
+local killAuraActive = false
 
 local normalSpeed = 16
 local fastSpeed = 50
 local speedChangeRate = 0.5 -- Waktu dalam detik untuk transisi kecepatan
 
--- Fetch weapon data
-local function fetchWeaponData()
-    local success, result = pcall(function()
-        return HttpService:GetAsync("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua")
-    end)
-    if success then
-        return loadstring(result)()
-    else
-        warn("Failed to fetch weapon data.")
-        return {}
-    end
-end
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
+
+
 
 -- Parent to PlayerGui
 yteamGUI.Name = "yteamGUI"
@@ -427,72 +418,43 @@ end)
 -- Inisialisasi kecepatan
 setSpeed(normalSpeed)
 
--- Find the highest damage melee weapon
-local function findHighestDamageWeapon()
-    local weapons = fetchWeaponData()
-    local highestDamage = 0
-    local bestWeapon = nil
-    for _, item in pairs(weapons) do
-        if item.itemType == "MELEE_WEAPON" and item.itemStats and item.itemStats.meleeDamage > highestDamage then
-            highestDamage = item.itemStats.meleeDamage
-            bestWeapon = item
-        end
-    end
-    return bestWeapon
-end
+-- Radius dan Damage untuk Kill Aura
+local killAuraRadius = 30
+local killAuraDamage = 60
 
--- Attack function
-local function attack(target)
-    local weapon = findHighestDamageWeapon()
-    if weapon then
-        local tool = game.Players.LocalPlayer.Backpack:FindFirstChild(weapon.id)
-        if tool then
-            -- Ensure the tool is equipped
-            if not game.Players.LocalPlayer.Character:FindFirstChild(tool.Name) then
-                tool.Parent = game.Players.LocalPlayer.Character
-            end
-
-            -- Perform attack
-            local touchPart = tool:FindFirstChildWhichIsA("Handle")
-            if touchPart then
-                firetouchinterest(touchPart, target, 1)
-                firetouchinterest(touchPart, target, 0)
-            end
-        end
-    end
-end
--- Toggle Kill Aura
-killaurav1aButton.MouseButton1Click:Connect(function()
-    KillAuraEnabled = not KillAuraEnabled
-    killaurav1aButton.Text = KillAuraEnabled and "Disable Kill Aura" or "Enable Kill Aura"
-
-    if KillAuraEnabled then
-        -- Start Kill Aura
-        RunService.Heartbeat:Connect(function()
-            if KillAuraEnabled then
-                local character = game.Players.LocalPlayer.Character
-                local tool = character and character:FindFirstChildWhichIsA("Tool")
-                if tool then
-                    local touchPart = tool:FindFirstChildWhichIsA("Handle")
-                    if touchPart then
-                        local characters = {}
-                        for _, player in ipairs(Players:GetPlayers()) do
-                            if player ~= game.Players.LocalPlayer and player.Character then
-                                table.insert(characters, player.Character)
-                            end
-                        end
-                        local ignoreList = OverlapParams.new()
-                        ignoreList.FilterDescendantsInstances = characters
-                        local inRange = workspace:GetPartBoundsInBox(touchPart.CFrame, touchPart.Size + Vector3.new(30, 30, 30), ignoreList)
-                        for _, obj in ipairs(inRange) do
-                            local char = obj:FindFirstAncestorWhichIsA("Model")
-                            if char and char:FindFirstChildWhichIsA("Humanoid") then
-                                attack(char)
-                            end
-                        end
-                    end
+-- Fungsi untuk menghancurkan objek dalam radius
+local function destroyObjectsInRadius()
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") or obj:IsA("Part") then
+            local distance = (obj.Position - humanoidRootPart.Position).Magnitude
+            if distance <= killAuraRadius and obj ~= character then
+                if obj:IsA("Model") and obj:FindFirstChild("Humanoid") then
+                    obj.Humanoid.Health = obj.Humanoid.Health - killAuraDamage
+                else
+                    obj:Destroy()  -- Hancurkan bangunan, pohon, rumput, dll
                 end
             end
-        end)
+        end
+    end
+end
+-- Event untuk mengaktifkan Kill Aura secara berkala
+RunService.Heartbeat:Connect(function()
+    destroyObjectsInRadius()
+end)
+
+-- Fungsi untuk toggle Kill Aura
+killAuraButton.MouseButton1Click:Connect(function()
+    killAuraActive = not killAuraActive
+    if killAuraActive then
+        killAuraButton.Text = "Kill Aura [ON]"
+    else
+        killAuraButton.Text = "Kill Aura [OFF]"
+    end
+end)
+
+-- Pengkondisian untuk menjalankan Kill Aura hanya saat aktif
+RunService.Heartbeat:Connect(function()
+    if killAuraActive then
+        destroyObjectsInRadius()
     end
 end)
