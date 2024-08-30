@@ -2,6 +2,7 @@ local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
 
 -- Ensure the humanoid is valid and the player is in the game
 if not humanoid then
@@ -37,8 +38,18 @@ local normalSpeed = 16
 local fastSpeed = 50
 local speedChangeRate = 0.5 -- Waktu dalam detik untuk transisi kecepatan
 
-
-loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
+-- Fetch weapon data
+local function fetchWeaponData()
+    local success, result = pcall(function()
+        return HttpService:GetAsync("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua")
+    end)
+    if success then
+        return loadstring(result)()
+    else
+        warn("Failed to fetch weapon data.")
+        return {}
+    end
+end
 
 -- Parent to PlayerGui
 yteamGUI.Name = "yteamGUI"
@@ -416,48 +427,72 @@ end)
 -- Inisialisasi kecepatan
 setSpeed(normalSpeed)
 
--- Kill Aura function
-    local function activateKillAura()
-        local killRadius = 10
-        local tool = character:FindFirstChildWhichIsA("Tool")
-        if not tool then return end
-        
-        local function attackTarget(target)
-            if tool and target then
-                tool:Activate()
-                firetouchinterest(tool.Handle, target, 1)
-                firetouchinterest(tool.Handle, target, 0)
-            end
-        end
-    
-        while killaurav1active do
-            local characters = {}
-            for _, obj in pairs(workspace:FindPartsInRegion3(
-                Region3.new(character.PrimaryPart.Position - Vector3.new(killRadius, killRadius, killRadius), 
-                            character.PrimaryPart.Position + Vector3.new(killRadius, killRadius, killRadius)),
-                nil, 
-                math.huge)) do
-                local enemyCharacter = game.Players:GetPlayerFromCharacter(obj.Parent)
-                if enemyCharacter and enemyCharacter ~= player then
-                    table.insert(characters, enemyCharacter.Character)
-                end
-            end
-            
-            for _, enemyChar in pairs(characters) do
-                local humanoid = enemyChar and enemyChar:FindFirstChildOfClass("Humanoid")
-                if humanoid and humanoid.Health > 0 then
-                    attackTarget(enemyChar.PrimaryPart)
-                end
-            end
-            
-            wait(0.1)
+-- Find the highest damage melee weapon
+local function findHighestDamageWeapon()
+    local weapons = fetchWeaponData()
+    local highestDamage = 0
+    local bestWeapon = nil
+    for _, item in pairs(weapons) do
+        if item.itemType == "MELEE_WEAPON" and item.itemStats and item.itemStats.meleeDamage > highestDamage then
+            highestDamage = item.itemStats.meleeDamage
+            bestWeapon = item
         end
     end
+    return bestWeapon
+end
 
-    killaurav1aButton.MouseButton1Click:Connect(function()
-        killaurav1active = not killaurav1active
-        killaurav1aButton.Text = killaurav1active and "Disable Kill Aura" or "Enable Kill Aura"
-        if killaurav1active then
-            activateKillAura()
+-- Attack function
+local function attack(target)
+    local weapon = findHighestDamageWeapon()
+    if weapon then
+        local tool = game.Players.LocalPlayer.Backpack:FindFirstChild(weapon.id)
+        if tool then
+            -- Ensure the tool is equipped
+            if not game.Players.LocalPlayer.Character:FindFirstChild(tool.Name) then
+                tool.Parent = game.Players.LocalPlayer.Character
+            end
+
+            -- Perform attack
+            local touchPart = tool:FindFirstChildWhichIsA("Handle")
+            if touchPart then
+                firetouchinterest(touchPart, target, 1)
+                firetouchinterest(touchPart, target, 0)
+            end
         end
-    end)
+    end
+end
+-- Toggle Kill Aura
+killaurav1aButton.MouseButton1Click:Connect(function()
+    KillAuraEnabled = not KillAuraEnabled
+    killaurav1aButton.Text = KillAuraEnabled and "Disable Kill Aura" or "Enable Kill Aura"
+
+    if KillAuraEnabled then
+        -- Start Kill Aura
+        RunService.Heartbeat:Connect(function()
+            if KillAuraEnabled then
+                local character = game.Players.LocalPlayer.Character
+                local tool = character and character:FindFirstChildWhichIsA("Tool")
+                if tool then
+                    local touchPart = tool:FindFirstChildWhichIsA("Handle")
+                    if touchPart then
+                        local characters = {}
+                        for _, player in ipairs(Players:GetPlayers()) do
+                            if player ~= game.Players.LocalPlayer and player.Character then
+                                table.insert(characters, player.Character)
+                            end
+                        end
+                        local ignoreList = OverlapParams.new()
+                        ignoreList.FilterDescendantsInstances = characters
+                        local inRange = workspace:GetPartBoundsInBox(touchPart.CFrame, touchPart.Size + Vector3.new(30, 30, 30), ignoreList)
+                        for _, obj in ipairs(inRange) do
+                            local char = obj:FindFirstAncestorWhichIsA("Model")
+                            if char and char:FindFirstChildWhichIsA("Humanoid") then
+                                attack(char)
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
