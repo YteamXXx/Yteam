@@ -38,8 +38,15 @@ local fastSpeed = 50
 local speedChangeRate = 0.5 -- Waktu dalam detik untuk transisi kecepatan
 
 
+local killaurav1active = false
+local attackRange = 15 -- Radius of attack range
+local attackCooldown = 1 -- Time between attacks
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
+
+
+-- Load GetItems Script
+local GetItems = loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
+
 
 -- Parent to PlayerGui
 yteamGUI.Name = "yteamGUI"
@@ -417,3 +424,42 @@ end)
 -- Inisialisasi kecepatan
 setSpeed(normalSpeed)
 
+
+-- Toggle Kill Aura
+killaurav1aButton.MouseButton1Click:Connect(function()
+    killaurav1active = not killaurav1active
+    killaurav1aButton.Text = killaurav1active and "Kill Aura OFF" or "Kill Aura ON"
+end)
+
+-- Function to attack nearby players
+local function attackNearbyPlayers()
+    while killaurav1active do
+        local character = player.Character
+        if character then
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                for _, otherPlayer in pairs(game.Players:GetPlayers()) do
+                    if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local distance = (rootPart.Position - otherPlayer.Character.HumanoidRootPart.Position).magnitude
+                        if distance <= attackRange then
+                            -- Attack the player
+                            local weapon = GetItems.GetWeapon("MELEE_WEAPON")
+                            if weapon then
+                                -- Assuming weapon has a method `Attack` to perform the attack
+                                weapon:Attack(otherPlayer.Character)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        wait(attackCooldown)
+    end
+end
+
+-- Start Kill Aura
+RunService.Heartbeat:Connect(function()
+    if killaurav1active then
+        attackNearbyPlayers()
+    end
+end)
