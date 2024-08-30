@@ -31,7 +31,7 @@
 
     local espEnabled = false
     local speedActive = false
-    local killaurav1active = false
+    local killAuraActive  = false
 
     local normalSpeed = 16
     local fastSpeed = 50
@@ -423,43 +423,39 @@
     setSpeed(normalSpeed)
 
 
-    -- Fungsi untuk serangan otomatis ke semua musuh dalam radius dengan Raycasting
-    local function performKillAura()
-        while killAuraActive do
-            local characterPos = character.HumanoidRootPart.Position
-            local attackRemote = game.ReplicatedStorage:WaitForChild("AttackRemote")
+   -- Fungsi untuk serangan otomatis ke semua musuh dalam radius tanpa Remote Event
+local function performKillAura()
+    while killAuraActive do
+        local characterPos = character.HumanoidRootPart.Position
 
-            -- Loop melalui semua pemain untuk mendeteksi dan menyerang mereka
-            for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
-                if targetPlayer ~= player and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    local targetPos = targetPlayer.Character.HumanoidRootPart.Position
-                    local distance = (targetPos - characterPos).magnitude
+        -- Loop melalui semua pemain untuk mendeteksi dan menyerang mereka
+        for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
+            if targetPlayer ~= player and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local targetPos = targetPlayer.Character.HumanoidRootPart.Position
+                local distance = (targetPos - characterPos).magnitude
 
-                    -- Jika target berada dalam jarak serang
-                    if distance <= attackRange then
-                        local direction = (targetPos - characterPos).unit
-                        local ray = Ray.new(characterPos, direction * attackRange)
-                        local part, position = workspace:FindPartOnRay(ray, character)
-
-                        -- Jika ada part yang terdeteksi dan part tersebut adalah target
-                        if part and part.Parent == targetPlayer.Character then
-                            -- Serang target
-                            attackRemote:FireServer("MELEE_WEAPON", targetPlayer.Character.Humanoid)
-                        end
+                -- Jika target berada dalam jarak serang
+                if distance <= attackRange then
+                    -- Memastikan bahwa target terkena serangan (berbasis exploit)
+                    local humanoid = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        -- Atur health target menjadi 0 untuk menyerang
+                        humanoid.Health = 0
                     end
                 end
             end
-
-            wait(attackCooldown)
         end
+
+        wait(attackCooldown)
     end
+end
 
-    -- Mengaktifkan atau menonaktifkan Kill Aura saat button diklik
-    killaurav1aButton.MouseButton1Click:Connect(function()
-        killAuraActive = not killAuraActive
-        killaurav1aButton.Text = killAuraActive and "Kill Aura V1: ON" or "Kill Aura V1: OFF"
-        
-        if killAuraActive then
-            performKillAura()
-        end
-    end)
+-- Mengaktifkan atau menonaktifkan Kill Aura saat button diklik
+killaurav1aButton.MouseButton1Click:Connect(function()
+    killAuraActive = not killAuraActive
+    killaurav1aButton.Text = killAuraActive and "Kill Aura V1: ON" or "Kill Aura V1: OFF"
+    
+    if killAuraActive then
+        performKillAura()
+    end
+end)
