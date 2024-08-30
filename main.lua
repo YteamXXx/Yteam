@@ -10,35 +10,35 @@ if not humanoid then
 end
 
 -- GUI Elements
-local yteamGUI          = Instance.new("ScreenGui")
-local mainFrame         = Instance.new("Frame")
-local heading           = Instance.new("TextLabel")
-local bodyFrame         = Instance.new("Frame")
-local sidebarFrame      = Instance.new("Frame")
-local homeButton        = Instance.new("TextButton")
-local visualButton      = Instance.new("TextButton")
-local noClipButton      = Instance.new("TextButton")
-local closeButton       = Instance.new("TextButton")
-local minimizeButton    = Instance.new("TextButton")
+local yteamGUI = Instance.new("ScreenGui")
+local mainFrame = Instance.new("Frame")
+local heading = Instance.new("TextLabel")
+local bodyFrame = Instance.new("Frame")
+local sidebarFrame = Instance.new("Frame")
+local homeButton = Instance.new("TextButton")
+local visualButton = Instance.new("TextButton")
+local noClipButton = Instance.new("TextButton")
+local closeButton = Instance.new("TextButton")
+local minimizeButton = Instance.new("TextButton")
 
-local homeFrame         = Instance.new("Frame")
-local visualFrame       = Instance.new("Frame")
-local noClipFrame       = Instance.new("Frame")
+local homeFrame = Instance.new("Frame")
+local visualFrame = Instance.new("Frame")
+local noClipFrame = Instance.new("Frame")
 
-local espButton         = Instance.new("TextButton")
-local speedButton       = Instance.new("TextButton")
+local espButton = Instance.new("TextButton")
+local speedButton = Instance.new("TextButton")
 local killaurav1aButton = Instance.new("TextButton")
 
-local espEnabled        = false
-local speedActive       = false
-local killAuraActive    = false
+local espEnabled = false
+local speedActive = false
+local killaurav1active = false
+
+local normalSpeed = 16
+local fastSpeed = 50
+local speedChangeRate = 0.5 -- Waktu dalam detik untuk transisi kecepatan
 
 
-
-
--- Load GetItems Script
-local GetItems = loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
-
+loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua", true))()
 
 -- Parent to PlayerGui
 yteamGUI.Name = "yteamGUI"
@@ -64,7 +64,7 @@ heading.TextColor3 = Color3.fromRGB(255, 255, 255)
 heading.TextSize = 24.000
 heading.TextStrokeTransparency = 0.1
 heading.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-heading.TextColor3 = Color3.fromRGB(255, 85, 85)     -- Gradient Color
+heading.TextColor3 = Color3.fromRGB(255, 85, 85) -- Gradient Color
 
 -- Sidebar Frame
 sidebarFrame.Name = "sidebarFrame"
@@ -168,7 +168,6 @@ espButton.Text = "Toggle ESP"
 espButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 espButton.TextSize = 20.000
 -- Day/Night Toggle Button
-
 local dayNightButton = Instance.new("TextButton")
 dayNightButton.Name = "dayNightButton"
 dayNightButton.Parent = visualFrame
@@ -193,7 +192,7 @@ speedButton.TextSize = 20.000
 
 -- Kill Aura Button
 killaurav1aButton.Name = "killaurav1aButton"
-killaurav1aButton.Parent = noClipFrame
+killaurav1aButton.Parent = visualFrame
 killaurav1aButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 killaurav1aButton.Position = UDim2.new(0.5, -75, 0, 140)
 killaurav1aButton.Size = UDim2.new(0, 150, 0, 50)
@@ -260,7 +259,7 @@ local kingdomColors = {
     White = Color3.fromRGB(255, 255, 255),
     Gray = Color3.fromRGB(128, 128, 128),
     Black = Color3.fromRGB(0, 0, 0),
-    LightGray = Color3.fromRGB(211, 211, 211)     -- Default color for unknown kingdoms
+    LightGray = Color3.fromRGB(211, 211, 211) -- Default color for unknown kingdoms
 }
 
 -- Function to get the color based on player team or custom property
@@ -331,7 +330,7 @@ espButton.MouseButton1Click:Connect(function()
                     local marker = Instance.new("Part")
                     marker.Name = player.Name .. "_Marker"
                     marker.Parent = player.Character
-                    marker.Size = Vector3.new(1, 1, 1)     -- Small size for the dot
+                    marker.Size = Vector3.new(1, 1, 1) -- Small size for the dot
                     marker.Position = player.Character.PrimaryPart.Position + Vector3.new(0, 3, 0)
                     marker.BrickColor = BrickColor.new("Bright red")
                     marker.Anchored = true
@@ -417,114 +416,48 @@ end)
 -- Inisialisasi kecepatan
 setSpeed(normalSpeed)
 
-
-if connections then
-    local Disable = configs.Disable
-    for i,v in connections do
-        v:Disconnect() 
-    end
-    Disable:Fire()
-    Disable:Destroy()
-    table.clear(configs)
-end
-
-local Disable = Instance.new("BindableEvent")
-getgenv().configs = {
-    connections = {},
-    Disable = Disable,
-    Size = Vector3.new(30,30,30),
-    DeathCheck = true
-}
-
-local Players = cloneref(game:GetService("Players"))
-local RunService = cloneref(game:GetService("RunService"))
-local lp = Players.LocalPlayer
-local Run = true
-local Ignorelist = OverlapParams.new()
-Ignorelist.FilterType = Enum.RaycastFilterType.Include
-
-local function getchar(plr)
-    local plr = plr or lp
-    return plr.Character
-end
-
-local function gethumanoid(plr)
-    local char = plr:IsA("Model") and plr or getchar(plr)
-    if char then
-        return char:FindFirstChildWhichIsA("Humanoid")
-    end
-end
-
-local function IsAlive(Humanoid)
-    return Humanoid and Humanoid.Health > 0
-end
-
-local function GetTouchInterest(Tool)
-    return Tool and Tool:FindFirstChildWhichIsA("TouchTransmitter",true)
-end
-
-local function GetCharacters(LocalPlayerChar)
-    local Characters = {}
-    for i,v in Players:GetPlayers() do
-        table.insert(Characters,getchar(v))
-    end
-    table.remove(Characters,table.find(Characters,LocalPlayerChar))
-    return Characters
-end
-
-local function Attack(Tool,TouchPart,ToTouch)
-    if Tool:IsDescendantOf(workspace) then
-        Tool:Activate()
-        firetouchinterest(TouchPart,ToTouch,1)
-        firetouchinterest(TouchPart,ToTouch,0)
-    end
-end
-
-table.insert(getgenv().configs.connections,Disable.Event:Connect(function()
-    Run = false
-end))
-
-local function activateKillAura()
-    Run = true
-    while Run do
-        local char = getchar()
-        if IsAlive(gethumanoid(char)) then
-            local Tool = char and char:FindFirstChildWhichIsA("Tool")
-            local TouchInterest = Tool and GetTouchInterest(Tool)
-
-            if TouchInterest then
-                local TouchPart = TouchInterest.Parent
-                local Characters = GetCharacters(char)
-                Ignorelist.FilterDescendantsInstances = Characters
-                local InstancesInBox = workspace:GetPartBoundsInBox(TouchPart.CFrame, TouchPart.Size + getgenv().configs.Size, Ignorelist)
-
-                for i,v in InstancesInBox do
-                    local Character = v:FindFirstAncestorWhichIsA("Model")
-
-                    if table.find(Characters,Character) then
-                        if getgenv().configs.DeathCheck then                    
-                            if IsAlive(gethumanoid(Character)) then
-                                Attack(Tool, TouchPart, v)
-                            end
-                        else
-                            Attack(Tool, TouchPart, v)
-                        end
-                    end
-                end
+-- Kill Aura function
+    local function activateKillAura()
+        local killRadius = 10
+        local tool = character:FindFirstChildWhichIsA("Tool")
+        if not tool then return end
+        
+        local function attackTarget(target)
+            if tool and target then
+                tool:Activate()
+                firetouchinterest(tool.Handle, target, 1)
+                firetouchinterest(tool.Handle, target, 0)
             end
         end
-        RunService.Heartbeat:Wait()
+    
+        while killaurav1active do
+            local characters = {}
+            for _, obj in pairs(workspace:FindPartsInRegion3(
+                Region3.new(character.PrimaryPart.Position - Vector3.new(killRadius, killRadius, killRadius), 
+                            character.PrimaryPart.Position + Vector3.new(killRadius, killRadius, killRadius)),
+                nil, 
+                math.huge)) do
+                local enemyCharacter = game.Players:GetPlayerFromCharacter(obj.Parent)
+                if enemyCharacter and enemyCharacter ~= player then
+                    table.insert(characters, enemyCharacter.Character)
+                end
+            end
+            
+            for _, enemyChar in pairs(characters) do
+                local humanoid = enemyChar and enemyChar:FindFirstChildOfClass("Humanoid")
+                if humanoid and humanoid.Health > 0 then
+                    attackTarget(enemyChar.PrimaryPart)
+                end
+            end
+            
+            wait(0.1)
+        end
     end
-end
 
--- Tombol Kill Aura
-killaurav1aButton.MouseButton1Click:Connect(function()
-    killAuraActive = not killAuraActive
-    if killAuraActive then
-        activateKillAura()
-        killaurav1aButton.Text = "Kill Aura V1 [ON]"
-    else
-        Run = false
-        killaurav1aButton.Text = "Kill Aura V1 [OFF]"
-    end
-end)
+    killaurav1aButton.MouseButton1Click:Connect(function()
+        killaurav1active = not killaurav1active
+        killaurav1aButton.Text = killaurav1active and "Disable Kill Aura" or "Enable Kill Aura"
+        if killaurav1active then
+            activateKillAura()
+        end
+    end)
