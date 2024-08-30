@@ -193,7 +193,7 @@ speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.TextSize = 20.000
 
 -- Kill Aura Button
-killaurav1aButton.Name = "killAuraButton"
+killaurav1aButton.Name = "killaurav1aButton"
 killaurav1aButton.Parent = visualFrame
 killaurav1aButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 killaurav1aButton.Position = UDim2.new(0.5, -75, 0, 140)
@@ -202,6 +202,7 @@ killaurav1aButton.Font = Enum.Font.SourceSans
 killaurav1aButton.Text = "Kill Aura V1"
 killaurav1aButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 killaurav1aButton.TextSize = 20.000
+
 
 -- Toggle State
 local minimized = false
@@ -472,5 +473,4 @@ local function toggleKillAura()
         activateKillAura()
     end
 end
-
-killAuraButton.MouseButton1Click:Connect(toggleKillAura)
+killaurav1aButton.MouseButton1Click:Connect(toggleKillAura)
