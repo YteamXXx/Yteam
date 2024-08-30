@@ -38,10 +38,8 @@ local fastSpeed = 50
 local speedChangeRate = 0.5 -- Waktu dalam detik untuk transisi kecepatan
 
 
-local killaurav1active = false
-local attackRange = 15 -- Radius of attack range
-local attackCooldown = 1 -- Time between attacks
-
+local attackRange = 10 -- Jarak serang yang diinginkan
+local attackCooldown = 0.5 -- Jeda waktu antara serangan
 
 
 -- Load GetItems Script
@@ -200,7 +198,7 @@ speedButton.TextSize = 20.000
 
 -- Kill Aura Button
 killaurav1aButton.Name = "killaurav1aButton"
-killaurav1aButton.Parent = visualFrame
+killaurav1aButton.Parent = noClipFrame
 killaurav1aButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 killaurav1aButton.Position = UDim2.new(0.5, -75, 0, 140)
 killaurav1aButton.Size = UDim2.new(0, 150, 0, 50)
@@ -425,41 +423,37 @@ end)
 setSpeed(normalSpeed)
 
 
--- Toggle Kill Aura
-killaurav1aButton.MouseButton1Click:Connect(function()
-    killaurav1active = not killaurav1active
-    killaurav1aButton.Text = killaurav1active and "Kill Aura OFF" or "Kill Aura ON"
-end)
-
--- Function to attack nearby players
-local function attackNearbyPlayers()
+-- Fungsi untuk melakukan serangan otomatis
+local function performKillAura()
     while killaurav1active do
-        local character = player.Character
-        if character then
-            local rootPart = character:FindFirstChild("HumanoidRootPart")
-            if rootPart then
-                for _, otherPlayer in pairs(game.Players:GetPlayers()) do
-                    if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        local distance = (rootPart.Position - otherPlayer.Character.HumanoidRootPart.Position).magnitude
-                        if distance <= attackRange then
-                            -- Attack the player
-                            local weapon = GetItems.GetWeapon("MELEE_WEAPON")
-                            if weapon then
-                                -- Assuming weapon has a method `Attack` to perform the attack
-                                weapon:Attack(otherPlayer.Character)
-                            end
-                        end
+        -- Periksa setiap pemain di server
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            -- Pastikan player yang diperiksa bukan karakter kamu sendiri
+            if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local character = player.Character
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    -- Hitung jarak antara karakter kamu dan musuh
+                    local distance = (humanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude
+                    if distance <= attackRange then
+                        -- Serang musuh jika berada dalam jarak serang
+                        -- Pastikan kamu menggunakan Remote Event atau mekanisme serangan yang sesuai dengan game
+                        local attackRemote = game.ReplicatedStorage:WaitForChild("AttackRemote")
+                        attackRemote:FireServer("MELEE_WEAPON") -- Kirim perintah serangan ke server
                     end
                 end
             end
         end
-        wait(attackCooldown)
+        wait(attackCooldown) -- Tunggu sebelum serangan berikutnya
     end
 end
 
--- Start Kill Aura
-RunService.Heartbeat:Connect(function()
+-- Mengaktifkan atau menonaktifkan Kill Aura saat button diklik
+killaurav1aButton.MouseButton1Click:Connect(function()
+    killaurav1active = not killaurav1active
+    killaurav1aButton.Text = killaurav1active and "Kill Aura V1: ON" or "Kill Aura V1: OFF"
+    
     if killaurav1active then
-        attackNearbyPlayers()
+        performKillAura()
     end
 end)
