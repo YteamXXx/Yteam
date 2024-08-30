@@ -20,14 +20,18 @@ local visualButton = Instance.new("TextButton")
 local noClipButton = Instance.new("TextButton")
 local closeButton = Instance.new("TextButton")
 local minimizeButton = Instance.new("TextButton")
+
 local homeFrame = Instance.new("Frame")
 local visualFrame = Instance.new("Frame")
-local espButton = Instance.new("TextButton")
 local noClipFrame = Instance.new("Frame")
+
+local espButton = Instance.new("TextButton")
 local speedButton = Instance.new("TextButton")
+local killaurav1aButton = Instance.new("TextButton")
 
 local espEnabled = false
 local speedActive = false
+local killaurav1active = false
 
 local normalSpeed = 16
 local fastSpeed = 50
@@ -188,15 +192,15 @@ speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.TextSize = 20.000
 
 -- Kill Aura Button
-killAuraButton.Name = "killAuraButton"
-killAuraButton.Parent = visualFrame
-killAuraButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-killAuraButton.Position = UDim2.new(0.5, -75, 0, 140)
-killAuraButton.Size = UDim2.new(0, 150, 0, 50)
-killAuraButton.Font = Enum.Font.SourceSans
-killAuraButton.Text = "Kill Aura V1"
-killAuraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-killAuraButton.TextSize = 20.000
+killaurav1aButton.Name = "killaurav1aButton"
+killaurav1aButton.Parent = visualFrame
+killaurav1aButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+killaurav1aButton.Position = UDim2.new(0.5, -75, 0, 140)
+killaurav1aButton.Size = UDim2.new(0, 150, 0, 50)
+killaurav1aButton.Font = Enum.Font.SourceSans
+killaurav1aButton.Text = "Kill Aura V1"
+killaurav1aButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+killaurav1aButton.TextSize = 20.000
 
 -- Toggle State
 local minimized = false
@@ -413,32 +417,3 @@ end)
 -- Inisialisasi kecepatan
 setSpeed(normalSpeed)
 
--- Kill Aura Button Functionality
-killAuraButton.MouseButton1Click:Connect(function()
-    killAuraActive = not killAuraActive
-    if killAuraActive then
-        killAuraButton.Text = "Kill Aura: On"
-        -- Continuously check and attack players in range
-        RunService.RenderStepped:Connect(function()
-            if killAuraActive then
-                for _, otherPlayer in pairs(game.Players:GetPlayers()) do
-                    if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChildOfClass("Humanoid") then
-                        local distance = (otherPlayer.Character.HumanoidRootPart.Position - character.HumanoidRootPart.Position)
-                        .magnitude
-                        if distance <= 10 then                       -- Set the distance for kill aura activation
-                            -- Attack Logic Here
-                            local weapon = GetWeapon("MELEE_WEAPON") -- Replace with actual item data retrieval
-                            if weapon then
-                                -- Assuming the weapon has a method to attack
-                                weapon:Attack(otherPlayer.Character)
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-    else
-        killAuraButton.Text = "Kill Aura: Off"
-        -- Optional: Add code to disable the kill aura if needed
-    end
-end)
