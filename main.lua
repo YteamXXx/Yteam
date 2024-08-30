@@ -34,7 +34,7 @@ local speedActive = false
 local killAuraActive = false
 
 local normalSpeed = 16
-local fastSpeed = 50
+local fastSpeed = 30
 local speedChangeRate = 0.5 -- Waktu dalam detik untuk transisi kecepatan
 
 
