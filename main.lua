@@ -33,11 +33,6 @@ local espEnabled        = false
 local speedActive       = false
 local killAuraActive    = false
 
-local normalSpeed       = 16
-local fastSpeed         = 50
-local speedChangeRate   = 0.5   -- Waktu dalam detik untuk transisi kecepatan
-
-
 
 
 
@@ -173,6 +168,7 @@ espButton.Text = "Toggle ESP"
 espButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 espButton.TextSize = 20.000
 -- Day/Night Toggle Button
+
 local dayNightButton = Instance.new("TextButton")
 dayNightButton.Name = "dayNightButton"
 dayNightButton.Parent = visualFrame
@@ -422,59 +418,113 @@ end)
 setSpeed(normalSpeed)
 
 
--- Fungsi untuk mendapatkan senjata dengan damage tertinggi
-local function getHighestDamageWeapon()
-    local highestDamage = 0
-    local highestDamageWeapon = nil
-
-    for itemName, itemData in pairs(GetItems) do
-        if itemData.itemType == "MELEE_WEAPON" and itemData.itemStats and itemData.itemStats.meleeDamage then
-            if itemData.itemStats.meleeDamage > highestDamage then
-                highestDamage = itemData.itemStats.meleeDamage
-                highestDamageWeapon = itemName
-            end
-        end
+if connections then
+    local Disable = configs.Disable
+    for i,v in connections do
+        v:Disconnect() 
     end
-
-    return highestDamageWeapon
+    Disable:Fire()
+    Disable:Destroy()
+    table.clear(configs)
 end
 
--- Fungsi untuk menyerang musuh dalam radius
-local function attackNearbyEnemies()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    local radius = 10 -- Radius dalam studs
+local Disable = Instance.new("BindableEvent")
+getgenv().configs = {
+    connections = {},
+    Disable = Disable,
+    Size = Vector3.new(30,30,30),
+    DeathCheck = true
+}
 
-    while killAuraActive do
-        for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
-            if enemy:FindFirstChild("HumanoidRootPart") then
-                local distance = (enemy.HumanoidRootPart.Position - humanoidRootPart.Position).Magnitude
-                if distance <= radius then
-                    -- Serang musuh dengan senjata damage tertinggi
-                    local weaponName = getHighestDamageWeapon()
-                    if weaponName then
-                        game.ReplicatedStorage.AttackRemote:FireServer(weaponName, enemy)
+local Players = cloneref(game:GetService("Players"))
+local RunService = cloneref(game:GetService("RunService"))
+local lp = Players.LocalPlayer
+local Run = true
+local Ignorelist = OverlapParams.new()
+Ignorelist.FilterType = Enum.RaycastFilterType.Include
+
+local function getchar(plr)
+    local plr = plr or lp
+    return plr.Character
+end
+
+local function gethumanoid(plr)
+    local char = plr:IsA("Model") and plr or getchar(plr)
+    if char then
+        return char:FindFirstChildWhichIsA("Humanoid")
+    end
+end
+
+local function IsAlive(Humanoid)
+    return Humanoid and Humanoid.Health > 0
+end
+
+local function GetTouchInterest(Tool)
+    return Tool and Tool:FindFirstChildWhichIsA("TouchTransmitter",true)
+end
+
+local function GetCharacters(LocalPlayerChar)
+    local Characters = {}
+    for i,v in Players:GetPlayers() do
+        table.insert(Characters,getchar(v))
+    end
+    table.remove(Characters,table.find(Characters,LocalPlayerChar))
+    return Characters
+end
+
+local function Attack(Tool,TouchPart,ToTouch)
+    if Tool:IsDescendantOf(workspace) then
+        Tool:Activate()
+        firetouchinterest(TouchPart,ToTouch,1)
+        firetouchinterest(TouchPart,ToTouch,0)
+    end
+end
+
+table.insert(getgenv().configs.connections,Disable.Event:Connect(function()
+    Run = false
+end))
+
+local function activateKillAura()
+    Run = true
+    while Run do
+        local char = getchar()
+        if IsAlive(gethumanoid(char)) then
+            local Tool = char and char:FindFirstChildWhichIsA("Tool")
+            local TouchInterest = Tool and GetTouchInterest(Tool)
+
+            if TouchInterest then
+                local TouchPart = TouchInterest.Parent
+                local Characters = GetCharacters(char)
+                Ignorelist.FilterDescendantsInstances = Characters
+                local InstancesInBox = workspace:GetPartBoundsInBox(TouchPart.CFrame, TouchPart.Size + getgenv().configs.Size, Ignorelist)
+
+                for i,v in InstancesInBox do
+                    local Character = v:FindFirstAncestorWhichIsA("Model")
+
+                    if table.find(Characters,Character) then
+                        if getgenv().configs.DeathCheck then                    
+                            if IsAlive(gethumanoid(Character)) then
+                                Attack(Tool, TouchPart, v)
+                            end
+                        else
+                            Attack(Tool, TouchPart, v)
+                        end
                     end
                 end
             end
         end
-        wait(0.1) -- Interval cek setiap 0.1 detik
+        RunService.Heartbeat:Wait()
     end
 end
 
--- Status Kill Aura
-local killAuraActive = false
-
--- Fungsi untuk toggle Kill Aura
-local function toggleKillAura()
+-- Tombol Kill Aura
+killaurav1aButton.MouseButton1Click:Connect(function()
     killAuraActive = not killAuraActive
     if killAuraActive then
-        print("Kill Aura Aktif")
-        spawn(attackNearbyEnemies)  -- Mulai serangan otomatis
+        activateKillAura()
+        killaurav1aButton.Text = "Kill Aura V1 [ON]"
     else
-        print("Kill Aura Nonaktif")
+        Run = false
+        killaurav1aButton.Text = "Kill Aura V1 [OFF]"
     end
-end
-
-killaurav1aButton.MouseButton1Click:Connect(toggleKillAura)
+end)
