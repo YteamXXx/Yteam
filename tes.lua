@@ -1,31 +1,43 @@
 -- Load remote scripts
-loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Get_Remotes"))()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Retrive_Remotes"))()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Return_Remotes"))()
+local success, errorMessage = pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Get_Remotes"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Retrive_Remotes"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Return_Remotes"))()
+end)
+
+if not success then
+    warn("Failed to load remote scripts: " .. errorMessage)
+end
 
 -- Function to activate Kill Aura
 local function activateKillAura()
     local player = game.Players.LocalPlayer
     local character = player.Character
     if not character then return end
-    
+
     local humanoids = {}
-    
+
     -- Get all humanoids in the workspace within range
-    for _, v in pairs(workspace:FindPartsInRegion3(workspace.CurrentCamera.CFrame:ToWorldSpace(character.PrimaryPart.CFrame).CFrame:ToWorldSpace(CFrame.new(0, 0, -50)), nil, math.huge)) do
+    local region = workspace:FindPartsInRegion3(workspace.CurrentCamera.CFrame:ToWorldSpace(character.PrimaryPart.CFrame).CFrame:ToWorldSpace(CFrame.new(0, 0, -50)), nil, math.huge)
+    for _, v in pairs(region) do
         if v and v.Parent and v.Parent:FindFirstChildOfClass("Humanoid") then
             table.insert(humanoids, v.Parent)
         end
     end
-    
+
     -- Attack each humanoid found
     for _, enemy in pairs(humanoids) do
         if enemy ~= character then
             -- Use the melee AI remote to attack
-            remotes.meleeAI:FireServer({
-                hitObject = enemy,
-                hitCF = enemy.PrimaryPart.CFrame
-            })
+            local success, attackError = pcall(function()
+                remotes.meleeAI:FireServer({
+                    hitObject = enemy,
+                    hitCF = enemy.PrimaryPart.CFrame
+                })
+            end)
+            if not success then
+                warn("Failed to activate Kill Aura: " .. attackError)
+            end
         end
     end
 end
@@ -35,7 +47,7 @@ local function setSpeed(speed)
     local player = game.Players.LocalPlayer
     local character = player.Character
     if not character then return end
-    
+
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     if humanoid then
         humanoid.WalkSpeed = speed
@@ -46,7 +58,7 @@ end
 local function activateKillAuraWithSpeed(speed)
     -- Set speed first
     setSpeed(speed)
-    
+
     -- Activate Kill Aura
     activateKillAura()
 end
@@ -85,12 +97,10 @@ heading.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 heading.Size = UDim2.new(1, 0, 0, 50)
 heading.Font = Enum.Font.SourceSansBold
 heading.Text = "yteam"
-heading.TextColor3 = Color3.fromRGB(255, 255, 255)
+heading.TextColor3 = Color3.fromRGB(255, 85, 85) -- Top Gradient Color
 heading.TextSize = 24.000
 heading.TextStrokeTransparency = 0.1
 heading.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-heading.TextColor3 = Color3.fromRGB(255, 85, 85) -- Top Gradient Color
-heading.TextColor3 = Color3.fromRGB(255, 170, 170) -- Bottom Gradient Color
 
 -- Sidebar Frame
 sidebarFrame.Name = "sidebarFrame"
