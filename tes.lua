@@ -14,7 +14,6 @@ getgenv().remotes = {
     build = interactions:WaitForChild("build"),
     deleteStructure = interactions:WaitForChild("deleteStructure"),
     shotHitPlayer = interactions:WaitForChild("shotHitPlayer"),
-    shotHitAi = interactions:WaitForChild("shotHitAi"),
     objectHit = interactions:WaitForChild("objectHit"),
     hitStructure = interactions:WaitForChild("hitStructure"),
     shotStructure = interactions:WaitForChild("shotStructure"),
