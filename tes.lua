@@ -51,22 +51,22 @@ local speedEnabled = false
 local killAuraEnabled = false
 local godModeEnabled = false
 
--- Function to close GUI
+-- Fungsi untuk menutup GUI
 CloseButton.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- Function to minimize GUI
+-- Fungsi untuk minimize GUI
 MinimizeButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
--- Function to toggle ESP
+-- Fungsi untuk mengaktifkan/menonaktifkan ESP
 ESPButton.MouseButton1Click:Connect(function()
     espEnabled = not espEnabled
     if espEnabled then
         ESPButton.Text = "ESP: ON"
-        -- Add ESP code here
+        -- Tambahkan kode ESP di sini
         for _, player in pairs(game.Players:GetPlayers()) do
             if player ~= game.Players.LocalPlayer then
                 local highlight = Instance.new("Highlight")
@@ -77,7 +77,7 @@ ESPButton.MouseButton1Click:Connect(function()
         end
     else
         ESPButton.Text = "ESP: OFF"
-        -- Add code to turn off ESP here
+        -- Tambahkan kode untuk mematikan ESP di sini
         for _, player in pairs(game.Players:GetPlayers()) do
             if player ~= game.Players.LocalPlayer and player.Character:FindFirstChildOfClass("Highlight") then
                 player.Character:FindFirstChildOfClass("Highlight"):Destroy()
@@ -86,85 +86,86 @@ ESPButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Function to toggle speed
+-- Fungsi untuk mengaktifkan/menonaktifkan lari cepat
 SpeedButton.MouseButton1Click:Connect(function()
     speedEnabled = not speedEnabled
     if speedEnabled then
         SpeedButton.Text = "Speed: ON"
-        -- Smooth speed adjustment
-        local player = game.Players.LocalPlayer
-        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = 16 -- Start with normal speed
-            for i = 16, 50, 1 do
-                humanoid.WalkSpeed = i
-                wait(0.05) -- Small delay to smooth the increase
-            end
-        end
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50 -- Kecepatan lari cepat yang aman
     else
         SpeedButton.Text = "Speed: OFF"
-        -- Smooth speed reduction
-        local player = game.Players.LocalPlayer
-        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            for i = 50, 16, -1 do
-                humanoid.WalkSpeed = i
-                wait(0.05) -- Small delay to smooth the decrease
-            end
-        end
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16 -- Kecepatan normal
     end
 end)
 
--- Function to toggle Kill Aura
+-- Fungsi untuk mengaktifkan/menonaktifkan kill aura
 KillAuraButton.MouseButton1Click:Connect(function()
     killAuraEnabled = not killAuraEnabled
     if killAuraEnabled then
         KillAuraButton.Text = "Kill Aura: ON"
-        -- Start Kill Aura loop
-        while killAuraEnabled do
-            wait(0.1) -- Short interval for checks
-            local playerPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-            for _, player in pairs(game.Players:GetPlayers()) do
-                if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-                    local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
-                    if humanoidRootPart then
-                        local distance = (humanoidRootPart.Position - playerPos).magnitude
-                        if distance < 10 then
-                            -- Simulate attack
-                            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+        -- Aktifkan Kill Aura
+        spawn(function()
+            while killAuraEnabled do
+                wait(0.1) -- Tunggu 0.1 detik sebelum iterasi berikutnya
+                for _, enemy in pairs(game.Players:GetPlayers()) do
+                    if enemy ~= game.Players.LocalPlayer and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
+                        local distance = (enemy.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude
+                        if distance <= 10 then -- Jarak hitungan
+                            -- Kurangi health musuh secara nyata
+                            local humanoid = enemy.Character:FindFirstChild("Humanoid")
                             if humanoid then
-                                humanoid.Health = 0 -- Set health to 0 to simulate death
-                                -- Optionally: Add a visual effect to simulate attack
-                                local attackEffect = Instance.new("ParticleEmitter")
-                                attackEffect.Parent = player.Character.HumanoidRootPart
-                                attackEffect.Texture = "rbxassetid://12345678" -- Replace with an attack effect asset
-                                attackEffect.Lifetime = NumberRange.new(0.2, 0.5)
-                                attackEffect.Rate = 50
-                                wait(0.2) -- Delay to show the effect
-                                attackEffect:Destroy() -- Remove the effect after showing
+                                humanoid.Health = humanoid.Health - 25 -- Beri damage 25
+                                if humanoid.Health <= 0 then
+                                    humanoid:TakeDamage(humanoid.Health) -- Pastikan musuh mati jika health <= 0
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        KillAuraButton.Text = "Kill Aura: OFF"
+    end
+end)
+
+-- Fungsi untuk mengaktifkan/menonaktifkan god mode
+GodModeButton.MouseButton1Click:Connect(function()
+    godModeEnabled = not godModeEnabled
+    if godModeEnabled then
+        GodModeButton.Text = "God Mode: ON"
+        -- Tambahkan kode god mode di sini
+        game.Players.LocalPlayer.Character.Humanoid.MaxHealth = math.huge
+        game.Players.LocalPlayer.Character.Humanoid.Health = math.huge
+    else
+        GodModeButton.Text = "God Mode: OFF"
+        -- Tambahkan kode untuk mematikan god mode di sini
+        game.Players.LocalPlayer.Character.Humanoid.MaxHealth = 100
+        game.Players.LocalPlayer.Character.Humanoid.Health = 100
+    end
+end)
+
+-- Otomatis mengaktifkan kill aura saat masuk ke dalam game
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+    killAuraEnabled = true
+    KillAuraButton.Text = "Kill Aura: ON"
+    spawn(function()
+        while killAuraEnabled do
+            wait(0.1)
+            for _, enemy in pairs(game.Players:GetPlayers()) do
+                if enemy ~= game.Players.LocalPlayer and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
+                    local distance = (enemy.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude
+                    if distance <= 10 then
+                        local humanoid = enemy.Character:FindFirstChild("Humanoid")
+                        if humanoid then
+                            humanoid.Health = humanoid.Health - 25
+                            if humanoid.Health <= 0 then
+                                humanoid:TakeDamage(humanoid.Health)
                             end
                         end
                     end
                 end
             end
         end
-    else
-        KillAuraButton.Text = "Kill Aura: OFF"
-    end
-end)
-
--- Function to toggle God Mode
-GodModeButton.MouseButton1Click:Connect(function()
-    godModeEnabled = not godModeEnabled
-    if godModeEnabled then
-        GodModeButton.Text = "God Mode: ON"
-        -- Add God Mode code here
-        game.Players.LocalPlayer.Character.Humanoid.MaxHealth = math.huge
-        game.Players.LocalPlayer.Character.Humanoid.Health = math.huge
-    else
-        GodModeButton.Text = "God Mode: OFF"
-        -- Add code to turn off God Mode here
-        game.Players.LocalPlayer.Character.Humanoid.MaxHealth = 100
-        game.Players.LocalPlayer.Character.Humanoid.Health = 100
-    end
+    end)
 end)
