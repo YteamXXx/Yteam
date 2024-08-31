@@ -71,12 +71,18 @@ local isMinimized = false
 local function minimizeFrame()
     if isMinimized then
         mainFrame.Size = UDim2.new(0, 500, 0, 300)
+        mainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
         minimizeButton.Text = "-"
         isMinimized = false
     else
-        mainFrame.Size = UDim2.new(0, 200, 0, 50)
+        mainFrame.Size = UDim2.new(0, 100, 0, 100)
+        mainFrame.Position = UDim2.new(0.5, -50, 0.5, -50) -- Tengah layar
         minimizeButton.Text = "+"
         isMinimized = true
+        -- Menambahkan radius sudut untuk membuat bentuk bulat
+        local cornerRadius = Instance.new("UICorner")
+        cornerRadius.Parent = mainFrame
+        cornerRadius.CornerRadius = UDim.new(0.5, 0)
     end
 end
 
@@ -155,3 +161,12 @@ end
 -- Menghubungkan tombol ke fungsi
 killAuraButton.MouseButton1Click:Connect(toggleKillAura)
 speedButton.MouseButton1Click:Connect(toggleSpeed)
+
+-- Mengatur kecepatan menggunakan RunService untuk update terus-menerus
+local RunService = game:GetService("RunService")
+RunService.RenderStepped:Connect(function()
+    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = speedActive and fastSpeed or normalSpeed
+    end
+end)
