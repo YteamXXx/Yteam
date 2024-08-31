@@ -3,17 +3,26 @@ local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 
--- Skrip untuk kill aura
+-- Skrip untuk kill aura dengan teleportasi
 local killAuraActive = false
 local function killAura()
     if killAuraActive then
+        local closestPlayer = nil
+        local shortestDistance = math.huge
+
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
                 local distance = (LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-                if distance < 10 then -- Jarak kill aura
-                    player.Character.Humanoid.Health = 0
+                if distance < shortestDistance then
+                    closestPlayer = player
+                    shortestDistance = distance
                 end
             end
+        end
+
+        if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = closestPlayer.Character.HumanoidRootPart.CFrame
+            closestPlayer.Character.Humanoid.Health = 0
         end
     end
 end
