@@ -3,7 +3,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/G
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Retrive_Remotes"))()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Return_Remotes"))()
 
--- Function to create Kill Aura
+-- Function to activate Kill Aura
 local function activateKillAura()
     local player = game.Players.LocalPlayer
     local character = player.Character
@@ -30,6 +30,27 @@ local function activateKillAura()
     end
 end
 
+-- Function to set speed without rollback
+local function setSpeed(speed)
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if not character then return end
+    
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = speed
+    end
+end
+
+-- Function to activate Kill Aura and speed boost
+local function activateKillAuraWithSpeed(speed)
+    -- Set speed first
+    setSpeed(speed)
+    
+    -- Activate Kill Aura
+    activateKillAura()
+end
+
 -- GUI Setup
 local yteamGUI = Instance.new("ScreenGui")
 local mainFrame = Instance.new("Frame")
@@ -40,6 +61,7 @@ local homeButton = Instance.new("TextButton")
 local visualButton = Instance.new("TextButton")
 local noClipButton = Instance.new("TextButton")
 local killAuraButton = Instance.new("TextButton")
+local speedButton = Instance.new("TextButton")
 local closeButton = Instance.new("TextButton")
 local minimizeButton = Instance.new("TextButton")
 
@@ -121,6 +143,17 @@ killAuraButton.Text = "Kill Aura"
 killAuraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 killAuraButton.TextSize = 20.000
 
+-- Speed Button
+speedButton.Name = "speedButton"
+speedButton.Parent = sidebarFrame
+speedButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+speedButton.Position = UDim2.new(0, 0, 0, 240)
+speedButton.Size = UDim2.new(1, 0, 0, 50)
+speedButton.Font = Enum.Font.SourceSans
+speedButton.Text = "Speed: 70"
+speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedButton.TextSize = 20.000
+
 -- Body Frame
 bodyFrame.Name = "bodyFrame"
 bodyFrame.Parent = mainFrame
@@ -150,21 +183,24 @@ minimizeButton.Text = "-"
 minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 minimizeButton.TextSize = 24.000
 
--- Button Actions
+-- Minimize Button Functionality
+minimizeButton.MouseButton1Click:Connect(function()
+    bodyFrame.Visible = not bodyFrame.Visible
+    minimizeButton.Text = bodyFrame.Visible and "-" or "+"
+end)
+
+-- Close Button Functionality
 closeButton.MouseButton1Click:Connect(function()
     yteamGUI:Destroy()
 end)
 
-minimizeButton.MouseButton1Click:Connect(function()
-    if mainFrame.Size == UDim2.new(0, 500, 0, 300) then
-        mainFrame.Size = UDim2.new(0, 100, 0, 50)
-        sidebarFrame.Visible = false
-    else
-        mainFrame.Size = UDim2.new(0, 500, 0, 300)
-        sidebarFrame.Visible = true
-    end
+-- Speed Button Functionality
+speedButton.MouseButton1Click:Connect(function()
+    setSpeed(70)
+    speedButton.Text = "Speed: 70"
 end)
 
+-- Kill Aura Button Functionality
 killAuraButton.MouseButton1Click:Connect(function()
-    activateKillAura()
+    activateKillAuraWithSpeed(70)
 end)
