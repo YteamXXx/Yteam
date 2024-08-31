@@ -1,142 +1,112 @@
+-- Mengakses ReplicatedStorage dan interactions
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
+local interactions = ReplicatedStorage:WaitForChild("remoteInterface"):WaitForChild("interactions")
+local inventory = ReplicatedStorage:WaitForChild("remoteInterface"):WaitForChild("inventory")
 
--- Mengakses RemoteInterface dan interactions
-local remoteInterface = ReplicatedStorage:WaitForChild("remoteInterface", 5)
-local interactions = remoteInterface:WaitForChild("interactions", 5)
+-- Menetapkan remotes tanpa duplikasi
+getgenv().remotes = {
+    meleeAI = interactions:WaitForChild("meleeAI"),
+    take = inventory:WaitForChild("take"),
+    pickupItem = inventory:WaitForChild("pickupItem"),
+    plant = interactions:WaitForChild("plant"),
+    harvest = interactions:WaitForChild("harvest"),
+    eat = interactions:WaitForChild("eat"),
+    build = interactions:WaitForChild("build"),
+    deleteStructure = interactions:WaitForChild("deleteStructure"),
+    shotHitPlayer = interactions:WaitForChild("shotHitPlayer"),
+    shotHitAi = interactions:WaitForChild("shotHitAi"),
+    objectHit = interactions:WaitForChild("objectHit"),
+    hitStructure = interactions:WaitForChild("hitStructure"),
+    shotStructure = interactions:WaitForChild("shotStructure"),
+    chop = interactions:WaitForChild("chop"),
+    buyRebirthPerk = interactions:WaitForChild("buyRebirthPerk"),
+    mine = interactions:WaitForChild("mine"),
+    meleeAl = interactions:WaitForChild("meleeAl"),
+    meleePlayer = interactions:WaitForChild("meleePlayer"),
+    rebirth = interactions:WaitForChild("rebirth"),
+    removePath = interactions:WaitForChild("removePath"),
+    itemAlInterraction = interactions:WaitForChild("itemAlInterraction")
+}
 
--- Remote Events
-local shotHitPlayer = interactions:WaitForChild("shotHitPlayer")
+-- Menetapkan nama-nama GUI sesuai dengan urutan
+for i, v in pairs(game.Players.LocalPlayer.PlayerGui.client.client:GetChildren()) do
+    if i == 2 then
+        v.Name = "meleePlayer"
+    elseif i == 4 then
+        v.Name = "chop"
+    elseif i == 5 then
+        v.Name = "mine"
+    elseif i == 6 then
+        v.Name = "hitStructure"
+    end
+end
 
-local objectHit = interactions:WaitForChild("objectHit")
-local hitStructure = interactions:WaitForChild("hitStructure")
-local shotHitStructure = interactions:WaitForChild("shotHitStructure")
-local chop = interactions:WaitForChild("chop")
-local buyRebirthPerk = interactions:WaitForChild("buyRebirthPerk")
-local deleteStructure = interactions:WaitForChild("deleteStructure")
-local eat = interactions:WaitForChild("eat")
-local mine = interactions:WaitForChild("mine")
-local meleePlayer = interactions:WaitForChild("meleePlayer")
-local rebirth = interactions:WaitForChild("rebirth")
-local plant = interactions:WaitForChild("plant")
-local removePath = interactions:WaitForChild("removePath")
-local itemAlInterraction = interactions:WaitForChild("itemAlInterraction")
+-- Fungsi tambahan
+function getFunctionName(Function)
+    return debug.getinfo and debug.getinfo(Function).name or debug.info and debug.info(Function, "n")
+end
 
--- Membuat GUI
-local ScreenGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local CloseButton = Instance.new("TextButton")
-local MinimizeButton = Instance.new("TextButton")
-local ESPButton = Instance.new("TextButton")
-local SpeedButton = Instance.new("TextButton")
-local KillAuraButton = Instance.new("TextButton")
+function shallowClone(Table)
+    local newTable = {}
+    if not Table then
+        return
+    end
+    for i, v in pairs(Table) do
+        newTable[i] = v
+    end
+    return newTable
+end
 
-ScreenGui.Parent = game.CoreGui
-
-MainFrame.Parent = ScreenGui
-MainFrame.Size = UDim2.new(0, 300, 0, 300)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -150)
-MainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-MainFrame.Active = true
-MainFrame.Draggable = true
-
-CloseButton.Parent = MainFrame
-CloseButton.Text = "Close"
-CloseButton.Size = UDim2.new(0, 50, 0, 25)
-CloseButton.Position = UDim2.new(1, -55, 0, 5)
-CloseButton.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
-end)
-
-MinimizeButton.Parent = MainFrame
-MinimizeButton.Text = "Minimize"
-MinimizeButton.Size = UDim2.new(0, 75, 0, 25)
-MinimizeButton.Position = UDim2.new(1, -130, 0, 5)
-MinimizeButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = not MainFrame.Visible
-end)
-
-ESPButton.Parent = MainFrame
-ESPButton.Text = "Toggle ESP"
-ESPButton.Size = UDim2.new(0, 100, 0, 50)
-ESPButton.Position = UDim2.new(0.5, -50, 0.5, -100)
-
-SpeedButton.Parent = MainFrame
-SpeedButton.Text = "Toggle Speed"
-SpeedButton.Size = UDim2.new(0, 100, 0, 50)
-SpeedButton.Position = UDim2.new(0.5, -50, 0.5, -50)
-
-KillAuraButton.Parent = MainFrame
-KillAuraButton.Text = "Toggle Kill Aura"
-KillAuraButton.Size = UDim2.new(0, 100, 0, 50)
-KillAuraButton.Position = UDim2.new(0.5, -50, 0.5, 0)
-
-local espEnabled = false
-local speedEnabled = false
-local killAuraEnabled = false
-
--- Fungsi untuk mengaktifkan/menonaktifkan ESP
-ESPButton.MouseButton1Click:Connect(function()
-    espEnabled = not espEnabled
-    if espEnabled then
-        ESPButton.Text = "ESP: ON"
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                local nameLabel = Instance.new("BillboardGui")
-                nameLabel.Parent = player.Character.HumanoidRootPart
-                nameLabel.Adornee = player.Character.HumanoidRootPart
-                nameLabel.Size = UDim2.new(0, 200, 0, 50)
-                nameLabel.StudsOffset = Vector3.new(0, 3, 0)
-                
-                local textLabel = Instance.new("TextLabel")
-                textLabel.Parent = nameLabel
-                textLabel.Text = player.Name
-                textLabel.Size = UDim2.new(1, 0, 1, 0)
-                textLabel.BackgroundTransparency = 1
-                textLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-                textLabel.TextStrokeTransparency = 0.5
-            end
-        end
-    else
-        ESPButton.Text = "ESP: OFF"
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart:FindFirstChildOfClass("BillboardGui") then
-                player.Character.HumanoidRootPart:FindFirstChildOfClass("BillboardGui"):Destroy()
-            end
+function getFiOneConstants(Function)
+    local upvalues = debug.getupvalues(Function)
+    local upvalue = upvalues[1]
+    if type(upvalue) == "table" then
+        local consts = rawget(upvalue, "const")
+        if type(consts) == "table" then
+            return consts, upvalues
         end
     end
-end)
+end
 
--- Fungsi untuk mengaktifkan/menonaktifkan lari cepat
-SpeedButton.MouseButton1Click:Connect(function()
-    speedEnabled = not speedEnabled
-    if speedEnabled then
-        SpeedButton.Text = "Speed: ON"
-        Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
-    else
-        SpeedButton.Text = "Speed: OFF"
-        Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-    end
-end)
-
--- Fungsi untuk mengaktifkan/menonaktifkan kill aura
-KillAuraButton.MouseButton1Click:Connect(function()
-    killAuraEnabled = not killAuraEnabled
-    if killAuraEnabled then
-        KillAuraButton.Text = "Kill Aura: ON"
-        while killAuraEnabled do
-            wait(0.1) -- Jeda singkat untuk meminimalisir beban server
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-                    local distance = (player.Character.HumanoidRootPart.Position - Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude
-                    if distance < 10 then
-                        -- Menggunakan remote event untuk menyerang
-                        meleePlayer:FireServer(player.Character.HumanoidRootPart.Position)
+function findInFiOne(Table, Type)
+    for i, v in pairs(Table) do
+        if type(v) == "table" then
+            local value = rawget(v, "value")
+            if type(value) == Type and (value:IsA("RemoteEvent") or value:IsA("RemoteFunction")) then
+                return value
+            end
+            for _, v2 in pairs(v) do
+                if type(v2) == "table" then
+                    local value = rawget(v2, "value")
+                    if typeof(value) == Type and (value:IsA("RemoteEvent") or value:IsA("RemoteFunction")) then
+                        return value
                     end
                 end
             end
         end
-    else
-        KillAuraButton.Text = "Kill Aura: OFF"
     end
-end)
+end
+
+-- Memeriksa dan mengatur fungsi-fungsi GC
+for i, v in pairs(getgc(true)) do
+    if type(v) == "table" then
+        for _, v2 in pairs(v) do
+            if type(v2) == "function" then
+                local consts, upvalues = getFiOneConstants(v2)
+                if consts and (table.find(consts, "FireServer") or table.find(consts, "InvokeServer")) then
+                    local remote = findInFiOne(upvalues, "Instance")
+                    if remote then
+                        local shallowTable = shallowClone(v)
+                        shallowTable.FireServer = v2
+                        table.remove(shallowTable, table.find(shallowTable, v2))
+                        getgenv().remotes[tostring(remote)] = shallowTable
+                    end
+                end
+            end
+        end
+    end
+
+    if type(v) == "function" and getFunctionName(v) == "on_lua_error" then
+        hookfunction(v, function() end)
+    end
+end
