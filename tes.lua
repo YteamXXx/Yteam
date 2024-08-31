@@ -1,3 +1,29 @@
+-- Fungsi untuk memuat dan menjalankan skrip remote
+local function loadRemoteScript(url)
+    local success, response = pcall(function()
+        return game:HttpGet(url)
+    end)
+
+    if success then
+        local func, loadError = loadstring(response)
+        if func then
+            local execSuccess, execError = pcall(func)
+            if not execSuccess then
+                warn("Error executing script from " .. url .. ": " .. execError)
+            end
+        else
+            warn("Error loading script from " .. url .. ": " .. loadError)
+        end
+    else
+        warn("Error fetching script from " .. url .. ": " .. response)
+    end
+end
+
+-- Memuat semua skrip remote yang dibutuhkan
+loadRemoteScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Get_Remotes")
+loadRemoteScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Retrive_Remotes")
+loadRemoteScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Return_Remotes")
+
 -- Membuat GUI
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -14,7 +40,7 @@ killAuraButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 killAuraButton.Position = UDim2.new(0.5, -75, 0, 20)
 killAuraButton.Size = UDim2.new(0, 150, 0, 50)
 killAuraButton.Font = Enum.Font.SourceSans
-killAuraButton.Text = "Kill Aura: OFF"
+killAuraButton.Text = "Kill Aura V1"
 killAuraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 killAuraButton.TextSize = 20
 
