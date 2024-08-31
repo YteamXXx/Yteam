@@ -20,7 +20,6 @@ getgenv().remotes = {
     chop = interactions:WaitForChild("chop"),
     buyRebirthPerk = interactions:WaitForChild("buyRebirthPerk"),
     mine = interactions:WaitForChild("mine"),
-    meleeAl = interactions:WaitForChild("meleeAl"),
     meleePlayer = interactions:WaitForChild("meleePlayer"),
     rebirth = interactions:WaitForChild("rebirth"),
     removePath = interactions:WaitForChild("removePath"),
