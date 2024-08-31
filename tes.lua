@@ -31,6 +31,11 @@ local playerGui = player:WaitForChild("PlayerGui")
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "CustomGUI"
 screenGui.Parent = playerGui
+
+-- Membuat Frame Utama
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Parent = screenGui
 mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 mainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
 mainFrame.Size = UDim2.new(0, 500, 0, 300)
@@ -40,7 +45,7 @@ mainFrame.Draggable = true
 -- Tombol Kill Aura
 local killAuraButton = Instance.new("TextButton")
 killAuraButton.Name = "KillAuraButton"
-killAuraButton.Parent = screenGui
+killAuraButton.Parent = mainFrame
 killAuraButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 killAuraButton.Position = UDim2.new(0.5, -75, 0, 20)
 killAuraButton.Size = UDim2.new(0, 150, 0, 50)
@@ -52,7 +57,7 @@ killAuraButton.TextSize = 20
 -- Tombol Speed Toggle
 local speedButton = Instance.new("TextButton")
 speedButton.Name = "SpeedButton"
-speedButton.Parent = screenGui
+speedButton.Parent = mainFrame
 speedButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 speedButton.Position = UDim2.new(0.5, -75, 0, 80)
 speedButton.Size = UDim2.new(0, 150, 0, 50)
@@ -66,15 +71,12 @@ local killAuraEnabled = false
 
 -- Fungsi untuk mengaktifkan Kill Aura
 local function activateKillAura()
-    -- Set radius Kill Aura
     local radius = 30 
 
-    -- Temukan semua musuh dalam radius
     for _, enemy in pairs(game.Workspace:GetChildren()) do
         if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") then
             local distance = (player.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
             if distance <= radius then
-                -- Hapus musuh atau berikan damage yang besar untuk memastikan mereka mati
                 enemy.Humanoid:TakeDamage(enemy.Humanoid.Health) -- Berikan damage sesuai dengan health maksimum musuh
             end
         end
