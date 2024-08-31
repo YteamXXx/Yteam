@@ -52,7 +52,6 @@ local RemoteInterface = ReplicatedStorage:WaitForChild("RemoteInterface")
 local Interactions = RemoteInterface:WaitForChild("Interactions")
 
 local meleePlayer = Interactions:WaitForChild("meleePlayer")
-local espRemote = Interactions:WaitForChild("espRemote")
 
 -- Functions
 
