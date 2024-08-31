@@ -1,4 +1,3 @@
--- Akses Remote
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local interactions = ReplicatedStorage:WaitForChild("remoteInterface"):WaitForChild("interactions")
 local inventory = ReplicatedStorage:WaitForChild("remoteInterface"):WaitForChild("inventory")
