@@ -31,6 +31,11 @@ local playerGui = player:WaitForChild("PlayerGui")
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "CustomGUI"
 screenGui.Parent = playerGui
+mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+mainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
+mainFrame.Size = UDim2.new(0, 500, 0, 300)
+mainFrame.Active = true
+mainFrame.Draggable = true
 
 -- Tombol Kill Aura
 local killAuraButton = Instance.new("TextButton")
@@ -70,7 +75,7 @@ local function activateKillAura()
             local distance = (player.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
             if distance <= radius then
                 -- Hapus musuh atau berikan damage yang besar untuk memastikan mereka mati
-                enemy.Humanoid:TakeDamage(enemy.Humanoid.MaxHealth) -- Berikan damage sesuai dengan health maksimum musuh
+                enemy.Humanoid:TakeDamage(enemy.Humanoid.Health) -- Berikan damage sesuai dengan health maksimum musuh
             end
         end
     end
