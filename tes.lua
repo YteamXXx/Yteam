@@ -1,4 +1,4 @@
--- Load remote scripts
+-- Fungsi untuk memuat skrip remote
 local function loadRemoteScripts()
     local remoteScripts = {
         "https://raw.githubusercontent.com/YteamXXx/Yteam/main/Get_Remotes",
@@ -23,9 +23,10 @@ local function loadRemoteScripts()
     end
 end
 
+-- Memuat skrip remote
 loadRemoteScripts()
 
--- Create GUI elements
+-- Membuat GUI
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
@@ -33,7 +34,7 @@ local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "CustomGUI"
 screenGui.Parent = playerGui
 
--- Button for Kill Aura
+-- Tombol Kill Aura
 local killAuraButton = Instance.new("TextButton")
 killAuraButton.Name = "KillAuraButton"
 killAuraButton.Parent = screenGui
@@ -45,7 +46,7 @@ killAuraButton.Text = "Kill Aura V1"
 killAuraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 killAuraButton.TextSize = 20
 
--- Button for Speed Toggle
+-- Tombol Speed Toggle
 local speedButton = Instance.new("TextButton")
 speedButton.Name = "SpeedButton"
 speedButton.Parent = screenGui
@@ -57,22 +58,28 @@ speedButton.Text = "Speed: 70"
 speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.TextSize = 20
 
--- Variable to track if Kill Aura is enabled
+-- Variabel untuk melacak apakah Kill Aura aktif
 local killAuraEnabled = false
 
--- Toggle Kill Aura function
+-- Fungsi untuk mengaktifkan Kill Aura
+local function activateKillAura()
+    print("Kill Aura activated") -- Debug: Pastikan fungsi ini dipanggil
+    -- Implementasikan logika Kill Aura di sini
+end
+
+-- Fungsi Toggle Kill Aura
 local function toggleKillAura()
     killAuraEnabled = not killAuraEnabled
     if killAuraEnabled then
         killAuraButton.Text = "Kill Aura: ON"
-        activateKillAura() -- Call the Kill Aura function
+        activateKillAura() -- Panggil fungsi Kill Aura
     else
         killAuraButton.Text = "Kill Aura: OFF"
-        -- You might want to add functionality to deactivate Kill Aura here
+        -- Implementasikan logika untuk menonaktifkan Kill Aura di sini
     end
 end
 
--- Speed Toggle function
+-- Fungsi untuk toggle kecepatan
 local function toggleSpeed()
     local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
     if humanoid then
@@ -86,6 +93,6 @@ local function toggleSpeed()
     end
 end
 
--- Connect buttons to functions
+-- Menghubungkan tombol ke fungsi
 killAuraButton.MouseButton1Click:Connect(toggleKillAura)
 speedButton.MouseButton1Click:Connect(toggleSpeed)
