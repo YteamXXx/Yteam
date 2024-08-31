@@ -122,7 +122,7 @@ KillAuraButton.MouseButton1Click:Connect(function()
         KillAuraButton.Text = "Kill Aura: ON"
         -- Start Kill Aura loop
         while killAuraEnabled do
-            wait(0.5) -- Short interval for checks
+            wait(0.1) -- Short interval for checks
             local playerPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
             for _, player in pairs(game.Players:GetPlayers()) do
                 if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
@@ -134,14 +134,14 @@ KillAuraButton.MouseButton1Click:Connect(function()
                             local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
                             if humanoid then
                                 humanoid.Health = 0 -- Set health to 0 to simulate death
-                                -- Optionally: Add a visual effect to simulate death
-                                local deathEffect = Instance.new("ParticleEmitter")
-                                deathEffect.Parent = player.Character.HumanoidRootPart
-                                deathEffect.Texture = "rbxassetid://12345678" -- Replace with a death effect asset
-                                deathEffect.Lifetime = NumberRange.new(0.5, 1)
-                                deathEffect.Rate = 100
-                                wait(0.5) -- Delay to show the effect
-                                deathEffect:Destroy() -- Remove the effect after showing
+                                -- Optionally: Add a visual effect to simulate attack
+                                local attackEffect = Instance.new("ParticleEmitter")
+                                attackEffect.Parent = player.Character.HumanoidRootPart
+                                attackEffect.Texture = "rbxassetid://12345678" -- Replace with an attack effect asset
+                                attackEffect.Lifetime = NumberRange.new(0.2, 0.5)
+                                attackEffect.Rate = 50
+                                wait(0.2) -- Delay to show the effect
+                                attackEffect:Destroy() -- Remove the effect after showing
                             end
                         end
                     end
@@ -166,38 +166,5 @@ GodModeButton.MouseButton1Click:Connect(function()
         -- Add code to turn off God Mode here
         game.Players.LocalPlayer.Character.Humanoid.MaxHealth = 100
         game.Players.LocalPlayer.Character.Humanoid.Health = 100
-    end
-end)
-
--- Automatically enable Kill Aura when character is added
-game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
-    killAuraEnabled = true
-    KillAuraButton.Text = "Kill Aura: ON"
-    while killAuraEnabled do
-        wait(0.5) -- Short interval for checks
-        local playerPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
-                if humanoidRootPart then
-                    local distance = (humanoidRootPart.Position - playerPos).magnitude
-                    if distance < 10 then
-                        -- Simulate attack
-                        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-                        if humanoid then
-                            humanoid.Health = 0 -- Set health to 0 to simulate death
-                            -- Optionally: Add a visual effect to simulate death
-                            local deathEffect = Instance.new("ParticleEmitter")
-                            deathEffect.Parent = player.Character.HumanoidRootPart
-                            deathEffect.Texture = "rbxassetid://12345678" -- Replace with a death effect asset
-                            deathEffect.Lifetime = NumberRange.new(0.5, 1)
-                            deathEffect.Rate = 100
-                            wait(0.5) -- Delay to show the effect
-                            deathEffect:Destroy() -- Remove the effect after showing
-                        end
-                    end
-                end
-            end
-        end
     end
 end)
