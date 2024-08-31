@@ -92,7 +92,7 @@ SpeedButton.MouseButton1Click:Connect(function()
     speedEnabled = not speedEnabled
     if speedEnabled then
         SpeedButton.Text = "Speed: ON"
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100 -- Kecepatan lari cepat
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50 -- Kecepatan lari cepat yang aman
     else
         SpeedButton.Text = "Speed: OFF"
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16 -- Kecepatan normal
@@ -116,6 +116,11 @@ GodModeButton.MouseButton1Click:Connect(function()
         GodModeButton.Text = "God Mode: ON"
         game.Players.LocalPlayer.Character.Humanoid.MaxHealth = math.huge
         game.Players.LocalPlayer.Character.Humanoid.Health = math.huge
+        game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+            if game.Players.LocalPlayer.Character.Humanoid.Health < math.huge then
+                game.Players.LocalPlayer.Character.Humanoid.Health = math.huge
+            end
+        end)
     else
         GodModeButton.Text = "God Mode: OFF"
         game.Players.LocalPlayer.Character.Humanoid.MaxHealth = 100
@@ -135,7 +140,7 @@ game:GetService("RunService").Stepped:Connect(function()
                 if distance < 100 then -- Jarak deteksi musuh
                     -- Teleportasi ke musuh
                     local targetPosition = player.Character.HumanoidRootPart.Position
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition.X, targetPosition.Y + 50, targetPosition.Z) -- Terbang di atas musuh
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition.X, targetPosition.Y + 5, targetPosition.Z) -- Terbang di atas musuh
                     wait(0.1) -- Tunggu sebentar sebelum turun
                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition.X, targetPosition.Y - 5, targetPosition.Z) -- Muncul dari bawah
                     wait(math.random(0.1, 0.3)) -- Tunggu sebentar sebelum mengaktifkan kill aura
