@@ -42,36 +42,52 @@ mainFrame.Size = UDim2.new(0, 500, 0, 300)
 mainFrame.Active = true
 mainFrame.Draggable = true
 
--- Tombol Minimize
-local minimizeButton = Instance.new("TextButton")
-minimizeButton.Name = "MinimizeButton"
-minimizeButton.Parent = mainFrame
-minimizeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-minimizeButton.Position = UDim2.new(0, 460, 0, 0)
-minimizeButton.Size = UDim2.new(0, 40, 0, 40)
-minimizeButton.Font = Enum.Font.SourceSans
-minimizeButton.Text = "_"
-minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-minimizeButton.TextSize = 20
-
 -- Tombol Close
 local closeButton = Instance.new("TextButton")
 closeButton.Name = "CloseButton"
 closeButton.Parent = mainFrame
-closeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-closeButton.Position = UDim2.new(0, 460, 0, 40)
-closeButton.Size = UDim2.new(0, 40, 0, 40)
-closeButton.Font = Enum.Font.SourceSans
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.Position = UDim2.new(1, -30, 0, 10)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
 closeButton.Text = "X"
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeButton.TextSize = 20
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Tombol Minimize
+local minimizeButton = Instance.new("TextButton")
+minimizeButton.Name = "MinimizeButton"
+minimizeButton.Parent = mainFrame
+minimizeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
+minimizeButton.Position = UDim2.new(0, 10, 0, 10)
+minimizeButton.Size = UDim2.new(0, 30, 0, 30)
+minimizeButton.Text = "-"
+minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeButton.TextSize = 20
+local isMinimized = false
+
+local function minimizeFrame()
+    if isMinimized then
+        mainFrame.Size = UDim2.new(0, 500, 0, 300)
+        minimizeButton.Text = "-"
+        isMinimized = false
+    else
+        mainFrame.Size = UDim2.new(0, 200, 0, 50)
+        minimizeButton.Text = "+"
+        isMinimized = true
+    end
+end
+
+minimizeButton.MouseButton1Click:Connect(minimizeFrame)
 
 -- Tombol Kill Aura
 local killAuraButton = Instance.new("TextButton")
 killAuraButton.Name = "KillAuraButton"
 killAuraButton.Parent = mainFrame
 killAuraButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-killAuraButton.Position = UDim2.new(0.5, -75, 0, 20)
+killAuraButton.Position = UDim2.new(0.5, -75, 0, 60)
 killAuraButton.Size = UDim2.new(0, 150, 0, 50)
 killAuraButton.Font = Enum.Font.SourceSans
 killAuraButton.Text = "Kill Aura V1"
@@ -83,19 +99,22 @@ local speedButton = Instance.new("TextButton")
 speedButton.Name = "SpeedButton"
 speedButton.Parent = mainFrame
 speedButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-speedButton.Position = UDim2.new(0.5, -75, 0, 80)
+speedButton.Position = UDim2.new(0.5, -75, 0, 120)
 speedButton.Size = UDim2.new(0, 150, 0, 50)
 speedButton.Font = Enum.Font.SourceSans
 speedButton.Text = "Speed: 16"
 speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.TextSize = 20
 
--- Variabel untuk melacak apakah Kill Aura aktif
+-- Variabel untuk melacak apakah Kill Aura aktif dan kecepatan
 local killAuraEnabled = false
+local speedActive = false
+local normalSpeed = 16
+local fastSpeed = 70
 
 -- Fungsi untuk mengaktifkan Kill Aura
 local function activateKillAura()
-    local radius = 30 
+    local radius = 30
 
     for _, enemy in pairs(game.Workspace:GetChildren()) do
         if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") then
@@ -118,45 +137,21 @@ local function toggleKillAura()
     end
 end
 
--- Fungsi untuk toggle kecepatan
+-- Fungsi untuk toggle kecepatan langsung
 local function toggleSpeed()
     local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
     if humanoid then
-        if humanoid.WalkSpeed == 70 then
-            humanoid.WalkSpeed = 16
-            speedButton.Text = "Speed: 16"
+        if speedActive then
+            humanoid.WalkSpeed = normalSpeed
+            speedButton.Text = "Speed: " .. normalSpeed
         else
-            humanoid.WalkSpeed = 70
-            speedButton.Text = "Speed: 70"
+            humanoid.WalkSpeed = fastSpeed
+            speedButton.Text = "Speed: " .. fastSpeed
         end
+        speedActive = not speedActive
     end
-end
-
--- Fungsi untuk minimize frame
-local function minimizeFrame()
-    mainFrame.Visible = not mainFrame.Visible
-end
-
--- Fungsi untuk close frame
-local function closeFrame()
-    mainFrame:Destroy()
 end
 
 -- Menghubungkan tombol ke fungsi
 killAuraButton.MouseButton1Click:Connect(toggleKillAura)
 speedButton.MouseButton1Click:Connect(toggleSpeed)
-minimizeButton.MouseButton1Click:Connect(minimizeFrame)
-closeButton.MouseButton1Click:Connect(closeFrame)
-
--- Mengatur kecepatan menggunakan RunService
-local RunService = game:GetService("RunService")
-local speed = 16
-
-RunService.RenderStepped:Connect(function()
-    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        if humanoid.WalkSpeed ~= speed then
-            humanoid.WalkSpeed = speed
-        end
-    end
-end)
