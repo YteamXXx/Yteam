@@ -7,7 +7,7 @@ local interactions = remoteInterface:WaitForChild("interactions", 5)
 
 -- Remote Events
 local shotHitPlayer = interactions:WaitForChild("shotHitPlayer")
-local shotHitAl = interactions:WaitForChild("shotHitAl")
+-- local shotHitAl = interactions:WaitForChild("shotHitAl")
 local objectHit = interactions:WaitForChild("objectHit")
 local hitStructure = interactions:WaitForChild("hitStructure")
 local shotHitStructure = interactions:WaitForChild("shotHitStructure")
