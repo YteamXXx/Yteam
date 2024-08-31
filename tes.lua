@@ -130,8 +130,19 @@ KillAuraButton.MouseButton1Click:Connect(function()
                     if humanoidRootPart then
                         local distance = (humanoidRootPart.Position - playerPos).magnitude
                         if distance < 10 then
-                            -- Simulate attack by setting health to zero
-                            player.Character.Humanoid.Health = 0
+                            -- Simulate attack
+                            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                            if humanoid then
+                                humanoid.Health = 0 -- Set health to 0 to simulate death
+                                -- Optionally: Add a visual effect to simulate death
+                                local deathEffect = Instance.new("ParticleEmitter")
+                                deathEffect.Parent = player.Character.HumanoidRootPart
+                                deathEffect.Texture = "rbxassetid://12345678" -- Replace with a death effect asset
+                                deathEffect.Lifetime = NumberRange.new(0.5, 1)
+                                deathEffect.Rate = 100
+                                wait(0.5) -- Delay to show the effect
+                                deathEffect:Destroy() -- Remove the effect after showing
+                            end
                         end
                     end
                 end
@@ -171,8 +182,19 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
                 if humanoidRootPart then
                     local distance = (humanoidRootPart.Position - playerPos).magnitude
                     if distance < 10 then
-                        -- Simulate attack by setting health to zero
-                        player.Character.Humanoid.Health = 0
+                        -- Simulate attack
+                        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                        if humanoid then
+                            humanoid.Health = 0 -- Set health to 0 to simulate death
+                            -- Optionally: Add a visual effect to simulate death
+                            local deathEffect = Instance.new("ParticleEmitter")
+                            deathEffect.Parent = player.Character.HumanoidRootPart
+                            deathEffect.Texture = "rbxassetid://12345678" -- Replace with a death effect asset
+                            deathEffect.Lifetime = NumberRange.new(0.5, 1)
+                            deathEffect.Rate = 100
+                            wait(0.5) -- Delay to show the effect
+                            deathEffect:Destroy() -- Remove the effect after showing
+                        end
                     end
                 end
             end
