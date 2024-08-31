@@ -118,7 +118,7 @@ game:GetService("RunService").Stepped:Connect(function()
                     wait(0.1) -- Tunggu sebentar sebelum turun
                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition.X, targetPosition.Y - 5, targetPosition.Z) -- Muncul dari bawah
                     wait(math.random(0.1, 0.3)) -- Tunggu sebentar sebelum mengaktifkan kill aura
-                    player.Character.Humanoid.Health = 0
+                    player.Character.Humanoid:TakeDamage(player.Character.Humanoid.Health) -- Mengalahkan musuh
                 end
             end
         end
