@@ -16,7 +16,7 @@ local buyRebirthPerk = interactions:WaitForChild("buyRebirthPerk")
 local deleteStructure = interactions:WaitForChild("deleteStructure")
 local eat = interactions:WaitForChild("eat")
 local mine = interactions:WaitForChild("mine")
-local meleeAl = interactions:WaitForChild("meleeAl")
+
 local meleePlayer = interactions:WaitForChild("meleePlayer")
 local rebirth = interactions:WaitForChild("rebirth")
 local plant = interactions:WaitForChild("plant")
