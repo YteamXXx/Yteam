@@ -21,16 +21,19 @@ KillAuraButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Fungsi teleportasi dan kill aura
+-- Fungsi teleportasi dan kill aura dengan randomisasi dan throttle
+local lastExecution = tick()
+
 game:GetService("RunService").Stepped:Connect(function()
-    if killAuraEnabled then
+    if killAuraEnabled and (tick() - lastExecution) > math.random(0.1, 0.5) then
+        lastExecution = tick()
         for _, player in pairs(game.Players:GetPlayers()) do
             if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
                 local distance = (player.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude
-                if distance < 50 then -- Jarak deteksi musuh
+                if distance < 100 then -- Jarak deteksi musuh
                     -- Teleportasi ke musuh
                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0) -- Terbang di atas musuh
-                    wait(0.1) -- Tunggu sebentar sebelum mengaktifkan kill aura
+                    wait(math.random(0.1, 0.3)) -- Tunggu sebentar sebelum mengaktifkan kill aura
                     player.Character.Humanoid.Health = 0
                 end
             end
