@@ -42,6 +42,30 @@ mainFrame.Size = UDim2.new(0, 500, 0, 300)
 mainFrame.Active = true
 mainFrame.Draggable = true
 
+-- Tombol Minimize
+local minimizeButton = Instance.new("TextButton")
+minimizeButton.Name = "MinimizeButton"
+minimizeButton.Parent = mainFrame
+minimizeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+minimizeButton.Position = UDim2.new(0, 460, 0, 0)
+minimizeButton.Size = UDim2.new(0, 40, 0, 40)
+minimizeButton.Font = Enum.Font.SourceSans
+minimizeButton.Text = "_"
+minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeButton.TextSize = 20
+
+-- Tombol Close
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Parent = mainFrame
+closeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+closeButton.Position = UDim2.new(0, 460, 0, 40)
+closeButton.Size = UDim2.new(0, 40, 0, 40)
+closeButton.Font = Enum.Font.SourceSans
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 20
+
 -- Tombol Kill Aura
 local killAuraButton = Instance.new("TextButton")
 killAuraButton.Name = "KillAuraButton"
@@ -108,6 +132,31 @@ local function toggleSpeed()
     end
 end
 
+-- Fungsi untuk minimize frame
+local function minimizeFrame()
+    mainFrame.Visible = not mainFrame.Visible
+end
+
+-- Fungsi untuk close frame
+local function closeFrame()
+    mainFrame:Destroy()
+end
+
 -- Menghubungkan tombol ke fungsi
 killAuraButton.MouseButton1Click:Connect(toggleKillAura)
 speedButton.MouseButton1Click:Connect(toggleSpeed)
+minimizeButton.MouseButton1Click:Connect(minimizeFrame)
+closeButton.MouseButton1Click:Connect(closeFrame)
+
+-- Mengatur kecepatan menggunakan RunService
+local RunService = game:GetService("RunService")
+local speed = 16
+
+RunService.RenderStepped:Connect(function()
+    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        if humanoid.WalkSpeed ~= speed then
+            humanoid.WalkSpeed = speed
+        end
+    end
+end)
