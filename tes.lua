@@ -109,3 +109,136 @@ for i, v in pairs(getgc(true)) do
         hookfunction(v, function() end)
     end
 end
+
+-- GUI
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+
+-- Speed Slider
+local speedFrame = Instance.new("Frame", gui)
+speedFrame.Size = UDim2.new(0, 200, 0, 100)
+speedFrame.Position = UDim2.new(0.5, -100, 0, 0)
+speedFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+
+local speedSlider = Instance.new("Slider", speedFrame)
+speedSlider.Size = UDim2.new(0, 180, 0, 20)
+speedSlider.Position = UDim2.new(0.5, -90, 0.5, -10)
+speedSlider.Min = 16
+speedSlider.Max = 100
+speedSlider.Value = 16
+
+local speedLabel = Instance.new("TextLabel", speedFrame)
+speedLabel.Size = UDim2.new(0, 200, 0, 20)
+speedLabel.Position = UDim2.new(0.5, -100, 0, 20)
+speedLabel.Text = "Speed: " .. speedSlider.Value
+speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+speedSlider.Changed:Connect(function()
+    local walkSpeed = speedSlider.Value
+    player.Character.Humanoid.WalkSpeed = walkSpeed
+    speedLabel.Text = "Speed: " .. walkSpeed
+end)
+
+-- ESP Button
+local espButton = Instance.new("TextButton", gui)
+espButton.Size = UDim2.new(0, 150, 0, 50)
+espButton.Position = UDim2.new(0.5, -75, 0, 110)
+espButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+espButton.Text = "ESP"
+espButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local espEnabled = false
+espButton.MouseButton1Click:Connect(function()
+    espEnabled = not espEnabled
+    espButton.Text = espEnabled and "ESP Enabled" or "ESP"
+    -- Update ESP logic here
+    if espEnabled then
+        -- Menampilkan ESP untuk semua pemain
+        for _, v in pairs(game.Players:GetPlayers()) do
+            if v ~= player then
+                local espLabel = Instance.new("BillboardGui", v.Character)
+                espLabel.Size = UDim2.new(0, 200, 0, 50)
+                espLabel.StudsOffset = Vector3.new(0, 3, 0)
+                
+                local nameLabel = Instance.new("TextLabel", espLabel)
+                nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                nameLabel.BackgroundTransparency = 1
+                nameLabel.Text = v.Name
+                nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                nameLabel.TextStrokeTransparency = 0.5
+
+                local healthLabel = Instance.new("TextLabel", espLabel)
+                healthLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                healthLabel.Position = UDim2.new(0, 0, 0.5, 0)
+                healthLabel.BackgroundTransparency = 1
+                healthLabel.Text = "Health: " .. (v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health or "N/A")
+                healthLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                healthLabel.TextStrokeTransparency = 0.5
+            end
+        end
+    else
+        -- Menyembunyikan ESP dari semua pemain
+        for _, v in pairs(game.Players:GetPlayers()) do
+            if v ~= player then
+                local espLabel = v.Character:FindFirstChildOfClass("BillboardGui")
+                if espLabel then
+                    espLabel:Destroy()
+                end
+            end
+        end
+    end
+end)
+
+-- Kill Aura Button
+local killAuraButton = Instance.new("TextButton", gui)
+killAuraButton.Size = UDim2.new(0, 150, 0, 50)
+killAuraButton.Position = UDim2.new(0.5, -75, 0, 170)
+killAuraButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+killAuraButton.Text = "Kill Aura V1"
+killAuraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local function getHighestDamageWeapon()
+    -- Mengambil data senjata dari remote
+    local response = game:HttpGet("https://raw.githubusercontent.com/YteamXXx/Yteam/main/GetItems.lua")
+    local items = loadstring(response)()
+    local highestDamage = 0
+    local bestWeapon = nil
+
+    for _, item in pairs(items) do
+        if item.itemType == "MELEE_WEAPON" and item.itemStats.meleeDamage > highestDamage then
+            highestDamage = item.itemStats.meleeDamage
+            bestWeapon = item
+        end
+    end
+
+    return bestWeapon
+end
+
+local function activateKillAura()
+    local bestWeapon = getHighestDamageWeapon()
+    if not bestWeapon then
+        warn("No melee weapons found.")
+        return
+    end
+
+    local weaponId = bestWeapon.id
+    local range = 10  -- Radius serangan
+    local playerPosition = player.Character.HumanoidRootPart.Position
+
+    for _, v in pairs(game.Players:GetPlayers()) do
+        if v ~= player and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            local targetPosition = v.Character.HumanoidRootPart.Position
+            local distance = (targetPosition - playerPosition).magnitude
+            if distance <= range then
+                -- Menggunakan senjata untuk menyerang
+                for _ = 1, 2 do  -- 2 kali serangan
+                    getgenv().remotes.meleeAI:FireServer(weaponId, v.Character.HumanoidRootPart.Position)
+                end
+            end
+        end
+    end
+end
+
+killAuraButton.MouseButton1Click:Connect(function()
+    activateKillAura()
+end)
