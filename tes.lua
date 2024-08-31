@@ -22,7 +22,6 @@ getgenv().remotes = {
     meleePlayer = interactions:WaitForChild("meleePlayer"),
     rebirth = interactions:WaitForChild("rebirth"),
     removePath = interactions:WaitForChild("removePath"),
-    itemAlInterraction = interactions:WaitForChild("itemAlInterraction")
 }
 
 -- Menetapkan nama-nama GUI sesuai dengan urutan
