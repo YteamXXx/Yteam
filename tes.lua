@@ -1,4 +1,3 @@
--- Membuat GUI
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local CloseButton = Instance.new("TextButton")
@@ -52,22 +51,22 @@ local speedEnabled = false
 local killAuraEnabled = false
 local godModeEnabled = false
 
--- Fungsi untuk menutup GUI
+-- Function to close GUI
 CloseButton.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- Fungsi untuk minimize GUI
+-- Function to minimize GUI
 MinimizeButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
--- Fungsi untuk mengaktifkan/menonaktifkan ESP
+-- Function to toggle ESP
 ESPButton.MouseButton1Click:Connect(function()
     espEnabled = not espEnabled
     if espEnabled then
         ESPButton.Text = "ESP: ON"
-        -- Tambahkan kode ESP di sini
+        -- Add ESP code here
         for _, player in pairs(game.Players:GetPlayers()) do
             if player ~= game.Players.LocalPlayer then
                 local highlight = Instance.new("Highlight")
@@ -78,7 +77,7 @@ ESPButton.MouseButton1Click:Connect(function()
         end
     else
         ESPButton.Text = "ESP: OFF"
-        -- Tambahkan kode untuk mematikan ESP di sini
+        -- Add code to turn off ESP here
         for _, player in pairs(game.Players:GetPlayers()) do
             if player ~= game.Players.LocalPlayer and player.Character:FindFirstChildOfClass("Highlight") then
                 player.Character:FindFirstChildOfClass("Highlight"):Destroy()
@@ -87,66 +86,94 @@ ESPButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Fungsi untuk mengaktifkan/menonaktifkan lari cepat
+-- Function to toggle speed
 SpeedButton.MouseButton1Click:Connect(function()
     speedEnabled = not speedEnabled
     if speedEnabled then
         SpeedButton.Text = "Speed: ON"
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50 -- Kecepatan lari cepat yang aman
+        -- Smooth speed adjustment
+        local player = game.Players.LocalPlayer
+        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = 16 -- Start with normal speed
+            for i = 16, 50, 1 do
+                humanoid.WalkSpeed = i
+                wait(0.05) -- Small delay to smooth the increase
+            end
+        end
     else
         SpeedButton.Text = "Speed: OFF"
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16 -- Kecepatan normal
+        -- Smooth speed reduction
+        local player = game.Players.LocalPlayer
+        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            for i = 50, 16, -1 do
+                humanoid.WalkSpeed = i
+                wait(0.05) -- Small delay to smooth the decrease
+            end
+        end
     end
 end)
 
--- Fungsi untuk mengaktifkan/menonaktifkan kill aura
+-- Function to toggle Kill Aura
 KillAuraButton.MouseButton1Click:Connect(function()
     killAuraEnabled = not killAuraEnabled
     if killAuraEnabled then
         KillAuraButton.Text = "Kill Aura: ON"
+        -- Start Kill Aura loop
+        while killAuraEnabled do
+            wait(0.5) -- Short interval for checks
+            local playerPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+                    local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                    if humanoidRootPart then
+                        local distance = (humanoidRootPart.Position - playerPos).magnitude
+                        if distance < 10 then
+                            -- Simulate attack by setting health to zero
+                            player.Character.Humanoid.Health = 0
+                        end
+                    end
+                end
+            end
+        end
     else
         KillAuraButton.Text = "Kill Aura: OFF"
     end
 end)
 
--- Fungsi untuk mengaktifkan/menonaktifkan god mode
+-- Function to toggle God Mode
 GodModeButton.MouseButton1Click:Connect(function()
     godModeEnabled = not godModeEnabled
     if godModeEnabled then
         GodModeButton.Text = "God Mode: ON"
+        -- Add God Mode code here
         game.Players.LocalPlayer.Character.Humanoid.MaxHealth = math.huge
         game.Players.LocalPlayer.Character.Humanoid.Health = math.huge
-        game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-            if game.Players.LocalPlayer.Character.Humanoid.Health < math.huge then
-                game.Players.LocalPlayer.Character.Humanoid.Health = math.huge
-            end
-        end)
     else
         GodModeButton.Text = "God Mode: OFF"
+        -- Add code to turn off God Mode here
         game.Players.LocalPlayer.Character.Humanoid.MaxHealth = 100
         game.Players.LocalPlayer.Character.Humanoid.Health = 100
     end
 end)
 
--- Fungsi teleportasi dan kill aura dengan randomisasi dan throttle
-local lastExecution = tick()
-
-game:GetService("RunService").Stepped:Connect(function()
-    if killAuraEnabled and (tick() - lastExecution) > math.random(0.1, 0.5) then
-        lastExecution = tick()
+-- Automatically enable Kill Aura when character is added
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+    killAuraEnabled = true
+    KillAuraButton.Text = "Kill Aura: ON"
+    while killAuraEnabled do
+        wait(0.5) -- Short interval for checks
+        local playerPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
         for _, player in pairs(game.Players:GetPlayers()) do
             if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-                local distance = (player.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude
-                if distance < 100 then -- Jarak deteksi musuh
-                    -- Teleportasi ke musuh
-                    local targetPosition = player.Character.HumanoidRootPart.Position
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition.X, targetPosition.Y + 5, targetPosition.Z) -- Terbang di atas musuh
-                    wait(0.1) -- Tunggu sebentar sebelum turun
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition.X, targetPosition.Y - 5, targetPosition.Z) -- Muncul dari bawah
-                    wait(math.random(0.1, 0.3)) -- Tunggu sebentar sebelum mengaktifkan kill aura
-                    player.Character.Humanoid.Health = 0 -- Mengalahkan musuh
-                    player.Character:BreakJoints() -- Memastikan musuh benar-benar mati
-                    player:LoadCharacter() -- Memaksa respawn
+                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    local distance = (humanoidRootPart.Position - playerPos).magnitude
+                    if distance < 10 then
+                        -- Simulate attack by setting health to zero
+                        player.Character.Humanoid.Health = 0
+                    end
                 end
             end
         end
