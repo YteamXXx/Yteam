@@ -4,12 +4,15 @@ local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 
 -- Skrip untuk kill aura
+local killAuraActive = false
 local function killAura()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-            local distance = (LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-            if distance < 10 then -- Jarak kill aura
-                player.Character.Humanoid.Health = 0
+    if killAuraActive then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+                local distance = (LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+                if distance < 10 then -- Jarak kill aura
+                    player.Character.Humanoid.Health = 0
+                end
             end
         end
     end
@@ -17,20 +20,23 @@ end
 
 RunService.Heartbeat:Connect(killAura)
 
--- GUI untuk lari cepat dengan tombol minimize dan close
+-- GUI untuk kill aura dan lari cepat dengan tombol minimize dan close
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local MinimizeButton = Instance.new("TextButton")
 local CloseButton = Instance.new("TextButton")
+local KillAuraButton = Instance.new("TextButton")
 local SpeedButton = Instance.new("TextButton")
 local MinimizedFrame = Instance.new("Frame")
 local MinimizedLabel = Instance.new("TextLabel")
 
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-Frame.Size = UDim2.new(0, 200, 0, 100)
-Frame.Position = UDim2.new(0.5, -100, 0.5, -50)
+Frame.Size = UDim2.new(0, 200, 0, 150)
+Frame.Position = UDim2.new(0.5, -100, 0.5, -75)
 Frame.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+Frame.Active = true
+Frame.Draggable = true
 Frame.Parent = ScreenGui
 
 MinimizeButton.Size = UDim2.new(0, 50, 0, 50)
@@ -43,8 +49,13 @@ CloseButton.Position = UDim2.new(0, 50, 0, 0)
 CloseButton.Text = "X"
 CloseButton.Parent = Frame
 
+KillAuraButton.Size = UDim2.new(0, 100, 0, 50)
+KillAuraButton.Position = UDim2.new(0, 0, 0, 50)
+KillAuraButton.Text = "Kill Aura"
+KillAuraButton.Parent = Frame
+
 SpeedButton.Size = UDim2.new(0, 100, 0, 50)
-SpeedButton.Position = UDim2.new(0, 0, 0, 50)
+SpeedButton.Position = UDim2.new(0, 0, 0, 100)
 SpeedButton.Text = "Run Fast"
 SpeedButton.Parent = Frame
 
@@ -60,19 +71,19 @@ MinimizedLabel.TextColor3 = Color3.new(1, 1, 1)
 MinimizedLabel.BackgroundTransparency = 1
 MinimizedLabel.Parent = MinimizedFrame
 
-local function enableSpeed()
+KillAuraButton.MouseButton1Click:Connect(function()
+    killAuraActive = not killAuraActive
+    KillAuraButton.Text = killAuraActive and "Kill Aura: ON" or "Kill Aura: OFF"
+end)
+
+SpeedButton.MouseButton1Click:Connect(function()
     LocalPlayer.Character.Humanoid.WalkSpeed = 100
-end
-
-local function disableSpeed()
-    LocalPlayer.Character.Humanoid.WalkSpeed = 16
-end
-
-SpeedButton.MouseButton1Click:Connect(enableSpeed)
+end)
 
 CloseButton.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
-    disableSpeed()
+    killAuraActive = false
+    LocalPlayer.Character.Humanoid.WalkSpeed = 16
 end)
 
 MinimizeButton.MouseButton1Click:Connect(function()
