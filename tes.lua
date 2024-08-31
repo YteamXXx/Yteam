@@ -146,6 +146,7 @@ game:GetService("RunService").Stepped:Connect(function()
                     wait(math.random(0.1, 0.3)) -- Tunggu sebentar sebelum mengaktifkan kill aura
                     player.Character.Humanoid.Health = 0 -- Mengalahkan musuh
                     player.Character:BreakJoints() -- Memastikan musuh benar-benar mati
+                    player:LoadCharacter() -- Memaksa respawn
                 end
             end
         end
