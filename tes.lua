@@ -7,10 +7,10 @@ local interactions = remoteInterface:WaitForChild("interactions", 5)
 
 -- Remote Events
 local shotHitPlayer = interactions:WaitForChild("shotHitPlayer")
-local shotHitAi = interactions:WaitForChild("shotHitAi")
+local shotHitAl = interactions:WaitForChild("shotHitAl")
 local objectHit = interactions:WaitForChild("objectHit")
 local hitStructure = interactions:WaitForChild("hitStructure")
-local shotStructure = interactions:WaitForChild("shotStructure")
+local shotHitStructure = interactions:WaitForChild("shotHitStructure")
 local chop = interactions:WaitForChild("chop")
 local buyRebirthPerk = interactions:WaitForChild("buyRebirthPerk")
 local deleteStructure = interactions:WaitForChild("deleteStructure")
