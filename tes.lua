@@ -1,12 +1,15 @@
--- Fungsi untuk memuat dan menjalankan skrip remote
+-- Fungsi untuk memuat dan menjalankan skrip remote dari URL
 local function loadRemoteScript(url)
-    local response = game:HttpGet(url)
-    local func, loadError = loadstring(response)
-    
-    if func then
-        func()
+    local success, response = pcall(function() return game:HttpGet(url) end)
+    if success then
+        local func, loadError = loadstring(response)
+        if func then
+            func()
+        else
+            warn("Error loading script from " .. url .. ": " .. loadError)
+        end
     else
-        warn("Error loading script from " .. url .. ": " .. loadError)
+        warn("Failed to get script from " .. url .. ": " .. response)
     end
 end
 
@@ -31,7 +34,7 @@ killAuraButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 killAuraButton.Position = UDim2.new(0.5, -75, 0, 20)
 killAuraButton.Size = UDim2.new(0, 150, 0, 50)
 killAuraButton.Font = Enum.Font.SourceSans
-killAuraButton.Text = "Kill Aura V1"
+killAuraButton.Text = "Kill Aura: OFF"
 killAuraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 killAuraButton.TextSize = 20
 
@@ -43,7 +46,7 @@ speedButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 speedButton.Position = UDim2.new(0.5, -75, 0, 80)
 speedButton.Size = UDim2.new(0, 150, 0, 50)
 speedButton.Font = Enum.Font.SourceSans
-speedButton.Text = "Speed: 70"
+speedButton.Text = "Speed: 16"
 speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.TextSize = 20
 
@@ -62,8 +65,6 @@ local function activateKillAura()
             if distance <= radius then
                 -- Hapus musuh atau berikan damage yang besar untuk memastikan mereka mati
                 enemy.Humanoid:TakeDamage(enemy.Humanoid.MaxHealth) -- Berikan damage sesuai dengan health maksimum musuh
-                -- atau langsung hapus model musuh:
-                -- enemy:Destroy()
             end
         end
     end
