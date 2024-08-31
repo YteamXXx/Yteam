@@ -1,23 +1,3 @@
--- Fungsi untuk memuat dan menjalankan skrip remote dari URL
-local function loadRemoteScript(url)
-    local success, response = pcall(function() return game:HttpGet(url) end)
-    if success then
-        local func, loadError = loadstring(response)
-        if func then
-            func()
-        else
-            warn("Error loading script from " .. url .. ": " .. loadError)
-        end
-    else
-        warn("Failed to get script from " .. url .. ": " .. response)
-    end
-end
-
--- Memuat semua skrip remote yang dibutuhkan
-loadRemoteScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Get_Remotes")
-loadRemoteScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Retrive_Remotes")
-loadRemoteScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Return_Remotes")
-
 -- Membuat GUI
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -78,7 +58,6 @@ local function toggleKillAura()
         activateKillAura() -- Panggil fungsi Kill Aura
     else
         killAuraButton.Text = "Kill Aura: OFF"
-        -- Implementasikan logika untuk menonaktifkan Kill Aura di sini (jika diperlukan)
     end
 end
 
