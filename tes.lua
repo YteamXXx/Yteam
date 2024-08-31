@@ -1,30 +1,19 @@
--- Fungsi untuk memuat skrip remote
-local function loadRemoteScripts()
-    local remoteScripts = {
-        "https://raw.githubusercontent.com/YteamXXx/Yteam/main/Get_Remotes",
-        "https://raw.githubusercontent.com/YteamXXx/Yteam/main/Retrive_Remotes",
-        "https://raw.githubusercontent.com/YteamXXx/Yteam/main/Return_Remotes"
-    }
-
-    for _, url in ipairs(remoteScripts) do
-        local remoteScript, err = game:HttpGet(url)
-        if not remoteScript then
-            warn("Error fetching remote script from " .. url .. ": " .. err)
-            return
-        end
-
-        local func, loadError = loadstring(remoteScript)
-        if func then
-            func()
-        else
-            warn("Error loading remote script from " .. url .. ": " .. loadError)
-            return
-        end
+-- Fungsi untuk memuat dan menjalankan skrip remote
+local function loadRemoteScript(url)
+    local response = game:HttpGet(url)
+    local func, loadError = loadstring(response)
+    
+    if func then
+        func()
+    else
+        warn("Error loading script from " .. url .. ": " .. loadError)
     end
 end
 
--- Memuat skrip remote
-loadRemoteScripts()
+-- Memuat semua skrip remote yang dibutuhkan
+loadRemoteScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Get_Remotes")
+loadRemoteScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Retrive_Remotes")
+loadRemoteScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Return_Remotes")
 
 -- Membuat GUI
 local player = game.Players.LocalPlayer
@@ -63,8 +52,21 @@ local killAuraEnabled = false
 
 -- Fungsi untuk mengaktifkan Kill Aura
 local function activateKillAura()
-    print("Kill Aura activated") -- Debug: Pastikan fungsi ini dipanggil
-    -- Implementasikan logika Kill Aura di sini
+    -- Set radius Kill Aura
+    local radius = 30 
+
+    -- Temukan semua musuh dalam radius
+    for _, enemy in pairs(game.Workspace:GetChildren()) do
+        if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") then
+            local distance = (player.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
+            if distance <= radius then
+                -- Hapus musuh atau berikan damage yang besar untuk memastikan mereka mati
+                enemy.Humanoid:TakeDamage(enemy.Humanoid.MaxHealth) -- Berikan damage sesuai dengan health maksimum musuh
+                -- atau langsung hapus model musuh:
+                -- enemy:Destroy()
+            end
+        end
+    end
 end
 
 -- Fungsi Toggle Kill Aura
@@ -75,7 +77,7 @@ local function toggleKillAura()
         activateKillAura() -- Panggil fungsi Kill Aura
     else
         killAuraButton.Text = "Kill Aura: OFF"
-        -- Implementasikan logika untuk menonaktifkan Kill Aura di sini
+        -- Implementasikan logika untuk menonaktifkan Kill Aura di sini (jika diperlukan)
     end
 end
 
