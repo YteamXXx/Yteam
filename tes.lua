@@ -11,12 +11,12 @@ local interactions = ReplicatedStorage:WaitForChild("remoteInterface"):WaitForCh
 
 -- Menetapkan remotes tanpa duplikasi
 getgenv().remotes = {
-    meleePlayer = interactions:WaitForChild("meleePlayer"),
+    shotHitPlayer = interactions:WaitForChild("shotHitPlayer"),
 }
 
 -- Setup GUI
 local gui = Instance.new("ScreenGui", PlayerGui)
-gui.Name = "AutoHitGUI"
+gui.Name = "KillAuraGUI"
 
 -- Main GUI Frame
 local mainFrame = Instance.new("Frame", gui)
@@ -46,7 +46,7 @@ minimalIcon.TextWrapped = true
 local titleLabel = Instance.new("TextLabel", mainFrame)
 titleLabel.Size = UDim2.new(1, 0, 0, 30)
 titleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-titleLabel.Text = "Auto Hit"
+titleLabel.Text = "Kill Aura"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.TextSize = 20
 titleLabel.TextStrokeTransparency = 0.5
@@ -72,7 +72,7 @@ local autoHitButton = Instance.new("TextButton", mainFrame)
 autoHitButton.Size = UDim2.new(1, -20, 0, 50)
 autoHitButton.Position = UDim2.new(0, 10, 0, 40)
 autoHitButton.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
-autoHitButton.Text = "Enable Auto Hit"
+autoHitButton.Text = "Enable Kill Aura"
 autoHitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 autoHitButton.TextSize = 20
 
@@ -81,8 +81,8 @@ local autoHitEnabled = false
 local attackRadius = 50
 local damage = 9999  -- Damage besar
 
--- Fungsi Auto Hit
-local function autoHit()
+-- Fungsi Kill Aura
+local function killAura()
     local playerPos = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") and localPlayer.Character.HumanoidRootPart.Position
     if not playerPos then return end
 
@@ -93,7 +93,7 @@ local function autoHit()
                 -- Mengirim perintah hit ke remote
                 local success, errorMessage = pcall(function()
                     -- Mengirim RemoteEvent dengan parameter yang benar
-                    getgenv().remotes.meleePlayer:FireServer(player.Character.Humanoid, damage)
+                    getgenv().remotes.shotHitPlayer:FireServer(player.Character.Humanoid, damage)
                 end)
                 if not success then
                     warn("Failed to send hit command: " .. errorMessage)
@@ -107,9 +107,9 @@ end
 autoHitButton.MouseButton1Click:Connect(function()
     autoHitEnabled = not autoHitEnabled
     if autoHitEnabled then
-        autoHitButton.Text = "Disable Auto Hit"
+        autoHitButton.Text = "Disable Kill Aura"
     else
-        autoHitButton.Text = "Enable Auto Hit"
+        autoHitButton.Text = "Enable Kill Aura"
     end
 end)
 
@@ -132,9 +132,9 @@ minimalFrame.MouseButton1Click:Connect(function()
     minimalFrame.Visible = false
 end)
 
--- Loop untuk menjalankan Auto Hit
+-- Loop untuk menjalankan Kill Aura
 RunService.RenderStepped:Connect(function()
     if autoHitEnabled then
-        autoHit()
+        killAura()
     end
 end)
