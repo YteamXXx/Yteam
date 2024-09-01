@@ -1,4 +1,4 @@
--- LocalScript: GUI Setup and Functionality
+-- LocalScript: Auto Hit Setup and Functionality
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -7,45 +7,45 @@ local PlayerGui = localPlayer.PlayerGui
 
 -- Remote Setup
 local interactions = ReplicatedStorage:WaitForChild("remoteInterface"):WaitForChild("interactions")
-local inventory = ReplicatedStorage:WaitForChild("remoteInterface"):WaitForChild("inventory")
 
 -- Menetapkan remotes tanpa duplikasi
 getgenv().remotes = {
-    meleeAI = interactions:WaitForChild("meleeAI"),
-    take = inventory:WaitForChild("take"),
-    pickupItem = inventory:WaitForChild("pickupItem"),
-    plant = interactions:WaitForChild("plant"),
-    harvest = interactions:WaitForChild("harvest"),
-    eat = interactions:WaitForChild("eat"),
-    build = interactions:WaitForChild("build"),
-    deleteStructure = interactions:WaitForChild("deleteStructure"),
-    shotHitPlayer = interactions:WaitForChild("shotHitPlayer"),
-    objectHit = interactions:WaitForChild("objectHit"),
-    hitStructure = interactions:WaitForChild("hitStructure"),
-    shotHitStructure = interactions:WaitForChild("shotHitStructure"),
-    chop = interactions:WaitForChild("chop"),
-    buyRebirthPerk = interactions:WaitForChild("buyRebirthPerk"),
-    mine = interactions:WaitForChild("mine"),
     meleePlayer = interactions:WaitForChild("meleePlayer"),
-    rebirth = interactions:WaitForChild("rebirth"),
-    removePath = interactions:WaitForChild("removePath"),
 }
 
 -- Setup GUI
 local gui = Instance.new("ScreenGui", PlayerGui)
-gui.Name = "CustomGUI"
+gui.Name = "AutoHitGUI"
 
+-- Main GUI Frame
 local mainFrame = Instance.new("Frame", gui)
-mainFrame.Size = UDim2.new(0, 200, 0, 250)
+mainFrame.Size = UDim2.new(0, 200, 0, 150)
 mainFrame.Position = UDim2.new(0, 10, 0, 10)
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.BorderSizePixel = 0
 mainFrame.Visible = true
 
+-- Minimal GUI Frame
+local minimalFrame = Instance.new("Frame", gui)
+minimalFrame.Size = UDim2.new(0, 50, 0, 50)
+minimalFrame.Position = UDim2.new(0.5, -25, 0, 10)
+minimalFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
+minimalFrame.Visible = false
+
+local minimalIcon = Instance.new("TextLabel", minimalFrame)
+minimalIcon.Size = UDim2.new(1, 0, 1, 0)
+minimalIcon.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
+minimalIcon.Text = "A"
+minimalIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimalIcon.TextSize = 20
+minimalIcon.TextStrokeTransparency = 0.5
+minimalIcon.TextWrapped = true
+
+-- Buttons for Main GUI
 local titleLabel = Instance.new("TextLabel", mainFrame)
 titleLabel.Size = UDim2.new(1, 0, 0, 30)
 titleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-titleLabel.Text = "Custom Script"
+titleLabel.Text = "Auto Hit"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.TextSize = 20
 titleLabel.TextStrokeTransparency = 0.5
@@ -67,63 +67,42 @@ minimizeButton.Text = "-"
 minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 minimizeButton.TextSize = 20
 
-local killAuraButton = Instance.new("TextButton", mainFrame)
-killAuraButton.Size = UDim2.new(1, -20, 0, 50)
-killAuraButton.Position = UDim2.new(0, 10, 0, 40)
-killAuraButton.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
-killAuraButton.Text = "Enable Kill Aura"
-killAuraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-killAuraButton.TextSize = 20
-
-local speedButton = Instance.new("TextButton", mainFrame)
-speedButton.Size = UDim2.new(1, -20, 0, 50)
-speedButton.Position = UDim2.new(0, 10, 0, 100)
-speedButton.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-speedButton.Text = "Enable Speed"
-speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedButton.TextSize = 20
+local autoHitButton = Instance.new("TextButton", mainFrame)
+autoHitButton.Size = UDim2.new(1, -20, 0, 50)
+autoHitButton.Position = UDim2.new(0, 10, 0, 40)
+autoHitButton.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
+autoHitButton.Text = "Enable Auto Hit"
+autoHitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoHitButton.TextSize = 20
 
 -- State Management
-local killAuraEnabled = false
-local speedEnabled = false
-local walkSpeed = 100
+local autoHitEnabled = false
 local attackRadius = 50
+local damage = 60
 
--- Fungsi Kill Aura
-local function killAura()
+-- Fungsi Auto Hit
+local function autoHit()
+    local playerPos = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") and localPlayer.Character.HumanoidRootPart.Position
+    if not playerPos then return end
+
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= localPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-            local distance = (player.Character.HumanoidRootPart.Position - localPlayer.Character.HumanoidRootPart.Position).Magnitude
-            if distance < attackRadius then
-                player.Character.Humanoid.Health = 0  -- Membuat musuh mati
+            local enemyPos = player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position
+            if enemyPos and (enemyPos - playerPos).Magnitude < attackRadius then
+                -- Mengirim perintah hit ke remote
+                getgenv().remotes.meleePlayer:FireServer("hit", player.Character.Humanoid, damage)
             end
         end
     end
 end
 
--- Fungsi untuk mengatur kecepatan lari
-local function setWalkSpeed(speed)
-    localPlayer.Character.Humanoid.WalkSpeed = speed
-end
-
 -- Event Handlers
-killAuraButton.MouseButton1Click:Connect(function()
-    killAuraEnabled = not killAuraEnabled
-    if killAuraEnabled then
-        killAuraButton.Text = "Disable Kill Aura"
+autoHitButton.MouseButton1Click:Connect(function()
+    autoHitEnabled = not autoHitEnabled
+    if autoHitEnabled then
+        autoHitButton.Text = "Disable Auto Hit"
     else
-        killAuraButton.Text = "Enable Kill Aura"
-    end
-end)
-
-speedButton.MouseButton1Click:Connect(function()
-    speedEnabled = not speedEnabled
-    if speedEnabled then
-        setWalkSpeed(walkSpeed)
-        speedButton.Text = "Disable Speed"
-    else
-        setWalkSpeed(16)  -- Set default walk speed
-        speedButton.Text = "Enable Speed"
+        autoHitButton.Text = "Enable Auto Hit"
     end
 end)
 
@@ -134,19 +113,21 @@ end)
 minimizeButton.MouseButton1Click:Connect(function()
     if mainFrame.Visible then
         mainFrame.Visible = false
-        minimizeButton.Text = "+"
+        minimalFrame.Visible = true
     else
         mainFrame.Visible = true
-        minimizeButton.Text = "-"
+        minimalFrame.Visible = false
     end
 end)
 
--- Loop untuk menjalankan Kill Aura
+minimalFrame.MouseButton1Click:Connect(function()
+    mainFrame.Visible = true
+    minimalFrame.Visible = false
+end)
+
+-- Loop untuk menjalankan Auto Hit
 RunService.RenderStepped:Connect(function()
-    if killAuraEnabled then
-        killAura()
+    if autoHitEnabled then
+        autoHit()
     end
 end)
-
--- Setting default walk speed
-setWalkSpeed(16)
