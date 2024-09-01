@@ -1,4 +1,5 @@
 -- LocalScript: Auto Hit Setup and Functionality
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -78,7 +79,7 @@ autoHitButton.TextSize = 20
 -- State Management
 local autoHitEnabled = false
 local attackRadius = 50
-local damage = 60
+local damage = 9999  -- Damage besar
 
 -- Fungsi Auto Hit
 local function autoHit()
