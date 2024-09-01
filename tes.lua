@@ -91,7 +91,13 @@ local function autoHit()
             local enemyPos = player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position
             if enemyPos and (enemyPos - playerPos).Magnitude < attackRadius then
                 -- Mengirim perintah hit ke remote
-                getgenv().remotes.meleePlayer:FireServer("hit", player.Character.Humanoid, damage)
+                local success, errorMessage = pcall(function()
+                    -- Mengirim RemoteEvent dengan parameter yang benar
+                    getgenv().remotes.meleePlayer:FireServer(player.Character.Humanoid, damage)
+                end)
+                if not success then
+                    warn("Failed to send hit command: " .. errorMessage)
+                end
             end
         end
     end
