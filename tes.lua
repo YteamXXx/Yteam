@@ -67,66 +67,35 @@ minimizeButton.Text = "-"
 minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 minimizeButton.TextSize = 20
 
-local espButton = Instance.new("TextButton", mainFrame)
-espButton.Size = UDim2.new(1, -20, 0, 50)
-espButton.Position = UDim2.new(0, 10, 0, 40)
-espButton.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
-espButton.Text = "Toggle ESP"
-espButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-espButton.TextSize = 20
+local killAuraButton = Instance.new("TextButton", mainFrame)
+killAuraButton.Size = UDim2.new(1, -20, 0, 50)
+killAuraButton.Position = UDim2.new(0, 10, 0, 40)
+killAuraButton.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
+killAuraButton.Text = "Enable Kill Aura"
+killAuraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+killAuraButton.TextSize = 20
 
 local speedButton = Instance.new("TextButton", mainFrame)
 speedButton.Size = UDim2.new(1, -20, 0, 50)
 speedButton.Position = UDim2.new(0, 10, 0, 100)
 speedButton.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-speedButton.Text = "Toggle Speed"
+speedButton.Text = "Enable Speed"
 speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.TextSize = 20
 
-local killAuraButton = Instance.new("TextButton", mainFrame)
-killAuraButton.Size = UDim2.new(1, -20, 0, 50)
-killAuraButton.Position = UDim2.new(0, 10, 0, 160)
-killAuraButton.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
-killAuraButton.Text = "Toggle Kill Aura"
-killAuraButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-killAuraButton.TextSize = 20
-
 -- State Management
-local espEnabled = false
-local speedEnabled = false
 local killAuraEnabled = false
+local speedEnabled = false
 local walkSpeed = 100
 local attackRadius = 50
 
--- Fungsi ESP
-local function enableESP()
+-- Fungsi Kill Aura
+local function killAura()
     for _, player in pairs(Players:GetPlayers()) do
-        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local espLabel = player.Character:FindFirstChild("ESPLabel")
-            if not espLabel then
-                espLabel = Instance.new("BillboardGui", player.Character.Head)
-                espLabel.Name = "ESPLabel"
-                espLabel.Size = UDim2.new(0, 200, 0, 50)
-                espLabel.AlwaysOnTop = true
-                espLabel.Adornee = player.Character.Head
-                local textLabel = Instance.new("TextLabel", espLabel)
-                textLabel.Size = UDim2.new(1, 0, 1, 0)
-                textLabel.BackgroundTransparency = 1
-                textLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-                textLabel.TextSize = 20
-                textLabel.Text = player.Name .. " | Health: " .. player.Character.Humanoid.Health
-                textLabel.TextStrokeTransparency = 0.5
-            end
-        end
-    end
-end
-
-local function disableESP()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= localPlayer and player.Character then
-            local espLabel = player.Character:FindFirstChild("ESPLabel")
-            if espLabel then
-                espLabel:Destroy()
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+            local distance = (player.Character.HumanoidRootPart.Position - localPlayer.Character.HumanoidRootPart.Position).Magnitude
+            if distance < attackRadius then
+                player.Character.Humanoid.Health = 0  -- Membuat musuh mati
             end
         end
     end
@@ -137,38 +106,13 @@ local function setWalkSpeed(speed)
     localPlayer.Character.Humanoid.WalkSpeed = speed
 end
 
--- Fungsi Kill Aura
-local function killAura()
-    local nearestPlayer = nil
-    local shortestDistance = attackRadius
-
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local distance = (player.Character.HumanoidRootPart.Position - localPlayer.Character.HumanoidRootPart.Position).Magnitude
-            if distance < shortestDistance then
-                nearestPlayer = player
-                shortestDistance = distance
-            end
-        end
-    end
-
-    if nearestPlayer then
-        -- Auto aim ke target
-        localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(localPlayer.Character.HumanoidRootPart.Position, nearestPlayer.Character.HumanoidRootPart.Position)
-        -- Serang target
-        remotes.meleePlayer:FireServer(nearestPlayer)
-    end
-end
-
 -- Event Handlers
-espButton.MouseButton1Click:Connect(function()
-    espEnabled = not espEnabled
-    if espEnabled then
-        enableESP()
-        espButton.Text = "Disable ESP"
+killAuraButton.MouseButton1Click:Connect(function()
+    killAuraEnabled = not killAuraEnabled
+    if killAuraEnabled then
+        killAuraButton.Text = "Disable Kill Aura"
     else
-        disableESP()
-        espButton.Text = "Enable ESP"
+        killAuraButton.Text = "Enable Kill Aura"
     end
 end)
 
@@ -183,27 +127,26 @@ speedButton.MouseButton1Click:Connect(function()
     end
 end)
 
-killAuraButton.MouseButton1Click:Connect(function()
-    killAuraEnabled = not killAuraEnabled
-    if killAuraEnabled then
-        killAuraButton.Text = "Disable Kill Aura"
-    else
-        killAuraButton.Text = "Enable Kill Aura"
-    end
-end)
-
 closeButton.MouseButton1Click:Connect(function()
     gui:Destroy()
 end)
 
 minimizeButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = not mainFrame.Visible
-    minimizeButton.Text = mainFrame.Visible and "-" or "+"
+    if mainFrame.Visible then
+        mainFrame.Visible = false
+        minimizeButton.Text = "+"
+    else
+        mainFrame.Visible = true
+        minimizeButton.Text = "-"
+    end
 end)
 
--- Loop untuk menjalankan Kill Aura dan ESP
+-- Loop untuk menjalankan Kill Aura
 RunService.RenderStepped:Connect(function()
     if killAuraEnabled then
         killAura()
     end
 end)
+
+-- Setting default walk speed
+setWalkSpeed(16)
