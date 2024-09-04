@@ -15,7 +15,7 @@ local function fetchScript(url)
             return nil
         end
     else
-        warn("Failed to fetch script from URL:", url)
+        warn("Failed to fetch script from URL:", url, "Error:", response)
         return nil
     end
 end
@@ -24,6 +24,12 @@ end
 local GetRemotes = fetchScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Get_Remotes")
 local RetrieveRemotes = fetchScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Retrive_Remotes")
 local ReturnRemotes = fetchScript("https://raw.githubusercontent.com/YteamXXx/Yteam/main/Return_Remotes")
+
+-- Memeriksa apakah skrip berhasil dimuat
+if not GetRemotes or not RetrieveRemotes or not ReturnRemotes then
+    warn("One or more scripts failed to load.")
+    return
+end
 
 -- GUI sederhana
 local screenGui = Instance.new("ScreenGui")
@@ -65,26 +71,30 @@ end)
 
 -- Variabel untuk status Kill Aura
 local killAuraActive = false
+local remoteFunctions = {}
 
 -- Fungsi untuk mengaktifkan dan menonaktifkan Kill Aura
 local function applyKillAura()
-    if killAuraActive then
-        -- Implementasi Kill Aura
-        local function onPlayerHit(targetPlayer)
-            local targetCharacter = targetPlayer.Character
-            if targetCharacter then
-                local humanoid = targetCharacter:FindFirstChildOfClass("Humanoid")
-                if humanoid then
-                    humanoid:TakeDamage(humanoid.Health) -- Contoh penerapan kerusakan
-                end
-            end
-        end
+    if not killAuraActive then return end
 
-        -- Memicu Kill Aura pada semua pemain dalam jangkauan tertentu
-        local players = game:GetService("Players"):GetPlayers()
-        for _, player in pairs(players) do
-            if player ~= game.Players.LocalPlayer then
-                onPlayerHit(player)
+    -- Fungsi untuk memicu kerusakan pada target
+    local function hitTarget(target)
+        if target and target:FindFirstChildOfClass("Humanoid") then
+            local humanoid = target:FindFirstChildOfClass("Humanoid")
+            humanoid:TakeDamage(humanoid.Health)  -- Contoh penerapan kerusakan
+        end
+    end
+
+    -- Mengambil semua pemain dan menerapkan Kill Aura pada mereka
+    for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+        if player ~= game.Players.LocalPlayer then
+            local character = player.Character
+            if character then
+                for _, part in pairs(character:GetChildren()) do
+                    if part:IsA("BasePart") then
+                        hitTarget(character)
+                    end
+                end
             end
         end
     end
@@ -94,6 +104,7 @@ end
 toggleButton.MouseButton1Click:Connect(function()
     killAuraActive = not killAuraActive
     statusLabel.Text = killAuraActive and "Kill Aura: On" or "Kill Aura: Off"
+
     if killAuraActive then
         -- Jalankan Kill Aura setiap detik
         while killAuraActive do
