@@ -1,140 +1,115 @@
--- LocalScript: Auto Hit Setup and Functionality
+-- Ambil modul dan remote dari URL yang diberikan
+local HttpService = game:GetService("HttpService")
+local GetRemotesURL = "https://raw.githubusercontent.com/YteamXXx/Yteam/main/Get_Remotes"
+local RetrieveRemotesURL = "https://raw.githubusercontent.com/YteamXXx/Yteam/main/Retrive_Remotes"
+local ReturnRemotesURL = "https://raw.githubusercontent.com/YteamXXx/Yteam/main/Return_Remotes"
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local localPlayer = Players.LocalPlayer
-local PlayerGui = localPlayer.PlayerGui
-
--- Remote Setup
-local interactions = ReplicatedStorage:WaitForChild("remoteInterface"):WaitForChild("interactions")
-
--- Menetapkan remotes tanpa duplikasi
-getgenv().remotes = {
-    shotHitPlayer = interactions:WaitForChild("shotHitPlayer"),
-}
-
--- Setup GUI
-local gui = Instance.new("ScreenGui", PlayerGui)
-gui.Name = "KillAuraGUI"
-
--- Main GUI Frame
-local mainFrame = Instance.new("Frame", gui)
-mainFrame.Size = UDim2.new(0, 200, 0, 150)
-mainFrame.Position = UDim2.new(0, 10, 0, 10)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-mainFrame.BorderSizePixel = 0
-mainFrame.Visible = true
-
--- Minimal GUI Frame
-local minimalFrame = Instance.new("Frame", gui)
-minimalFrame.Size = UDim2.new(0, 50, 0, 50)
-minimalFrame.Position = UDim2.new(0.5, -25, 0, 10)
-minimalFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
-minimalFrame.Visible = false
-
-local minimalIcon = Instance.new("TextLabel", minimalFrame)
-minimalIcon.Size = UDim2.new(1, 0, 1, 0)
-minimalIcon.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
-minimalIcon.Text = "A"
-minimalIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
-minimalIcon.TextSize = 20
-minimalIcon.TextStrokeTransparency = 0.5
-minimalIcon.TextWrapped = true
-
--- Buttons for Main GUI
-local titleLabel = Instance.new("TextLabel", mainFrame)
-titleLabel.Size = UDim2.new(1, 0, 0, 30)
-titleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-titleLabel.Text = "Kill Aura"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextSize = 20
-titleLabel.TextStrokeTransparency = 0.5
-titleLabel.TextWrapped = true
-
-local closeButton = Instance.new("TextButton", mainFrame)
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -30, 0, 0)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-closeButton.Text = "X"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextSize = 20
-
-local minimizeButton = Instance.new("TextButton", mainFrame)
-minimizeButton.Size = UDim2.new(0, 30, 0, 30)
-minimizeButton.Position = UDim2.new(1, -60, 0, 0)
-minimizeButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-minimizeButton.Text = "-"
-minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-minimizeButton.TextSize = 20
-
-local autoHitButton = Instance.new("TextButton", mainFrame)
-autoHitButton.Size = UDim2.new(1, -20, 0, 50)
-autoHitButton.Position = UDim2.new(0, 10, 0, 40)
-autoHitButton.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
-autoHitButton.Text = "Enable Kill Aura"
-autoHitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-autoHitButton.TextSize = 20
-
--- State Management
-local autoHitEnabled = false
-local attackRadius = 50
-local damage = 9999  -- Damage besar
-
--- Fungsi Kill Aura
-local function killAura()
-    local playerPos = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") and localPlayer.Character.HumanoidRootPart.Position
-    if not playerPos then return end
-
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-            local enemyPos = player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position
-            if enemyPos and (enemyPos - playerPos).Magnitude < attackRadius then
-                -- Mengirim perintah hit ke remote
-                local success, errorMessage = pcall(function()
-                    -- Mengirim RemoteEvent dengan parameter yang benar
-                    getgenv().remotes.shotHitPlayer:FireServer(player.Character.Humanoid, damage)
-                end)
-                if not success then
-                    warn("Failed to send hit command: " .. errorMessage)
-                end
-            end
-        end
+local function fetchScript(url)
+    local success, response = pcall(function()
+        return HttpService:GetAsync(url)
+    end)
+    if success then
+        return loadstring(response)()
+    else
+        warn("Failed to fetch script from URL:", url)
     end
 end
 
--- Event Handlers
-autoHitButton.MouseButton1Click:Connect(function()
-    autoHitEnabled = not autoHitEnabled
-    if autoHitEnabled then
-        autoHitButton.Text = "Disable Kill Aura"
-    else
-        autoHitButton.Text = "Enable Kill Aura"
-    end
-end)
+local GetRemotes = fetchScript(GetRemotesURL)
+local RetrieveRemotes = fetchScript(RetrieveRemotesURL)
+local ReturnRemotes = fetchScript(ReturnRemotesURL)
 
-closeButton.MouseButton1Click:Connect(function()
-    gui:Destroy()
-end)
+-- GUI sederhana
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KillAuraGui"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Position = UDim2.new(0.5, -100, 0.5, -50)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.Parent = screenGui
+
+local minimizeButton = Instance.new("TextButton")
+minimizeButton.Size = UDim2.new(0, 60, 0, 30)
+minimizeButton.Position = UDim2.new(0, 0, 0, 0)
+minimizeButton.Text = "_"
+minimizeButton.Parent = frame
 minimizeButton.MouseButton1Click:Connect(function()
-    if mainFrame.Visible then
-        mainFrame.Visible = false
-        minimalFrame.Visible = true
-    else
-        mainFrame.Visible = true
-        minimalFrame.Visible = false
-    end
+    frame.Visible = not frame.Visible
 end)
 
-minimalFrame.MouseButton1Click:Connect(function()
-    mainFrame.Visible = true
-    minimalFrame.Visible = false
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 60, 0, 30)
+closeButton.Position = UDim2.new(0, 140, 0, 0)
+closeButton.Text = "X"
+closeButton.Parent = frame
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
 end)
 
--- Loop untuk menjalankan Kill Aura
-RunService.RenderStepped:Connect(function()
-    if autoHitEnabled then
-        killAura()
+-- Kill Aura
+local function applyKillAura()
+    local function getRemoteFunctions()
+        local remotes = {}
+        local gc = getgc(true)
+        for _, v in ipairs(gc) do
+            if type(v) == "table" then
+                for _, v2 in pairs(v) do
+                    if type(v2) == "function" then
+                        local consts, upvalues = getFiOneConstants(v2)
+                        if consts and (table.find(consts, "FireServer") or table.find(consts, "InvokeServer")) then
+                            local remote = findInFiOne(upvalues, "Instance")
+                            if remote then
+                                local shallowTable = shallowClone(v)
+                                shallowTable.FireServer = v2
+                                table.remove(shallowTable, table.find(shallowTable, v2))
+                                remotes[tostring(remote)] = shallowTable
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        return remotes
     end
-end)
+
+    local remotes = getRemoteFunctions()
+
+    local function killAuraFunction()
+        local function callRemote(remote, params)
+            local remoteTable = remotes[tostring(remote)]
+            if remoteTable then
+                local fireServerFunction = remoteTable.FireServer
+                if fireServerFunction then
+                    fireServerFunction(remoteTable, table.unpack(params))
+                end
+            end
+        end
+
+        local function onPlayerHit(targetPlayer)
+            local targetCharacter = targetPlayer.Character
+            if targetCharacter then
+                local humanoid = targetCharacter:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    -- Example of how to apply damage to the target character
+                    humanoid:TakeDamage(humanoid.Health)
+                end
+            end
+        end
+
+        -- Set up your kill aura parameters and trigger the function
+        -- Example: Trigger kill aura on all players within a certain range
+        local players = game:GetService("Players"):GetPlayers()
+        for _, player in pairs(players) do
+            if player ~= game.Players.LocalPlayer then
+                onPlayerHit(player)
+            end
+        end
+    end
+
+    -- Call kill aura function
+    killAuraFunction()
+end
+
+applyKillAura()
