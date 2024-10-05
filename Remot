@@ -1,0 +1,226 @@
+local itemsModule = require(game:GetService("ReplicatedStorage").game.Items)
+local start = os.clock()
+
+-- Hook function to override debug info
+local stack = {'FiOne', game.Players.LocalPlayer.PlayerGui.client.client.tools.Tool.Collector}
+local oldinfo = hookfunction(getrenv().debug.info, function(level, options, ...)
+    if not checkcaller() then
+        local source = oldinfo(3, 's')
+        local callerTable = source:split(".")
+        if callerTable[#callerTable] == 'FiOne' and string.lower(options) == 's' then
+            return stack[level]
+        end
+    end
+    return oldinfo(level, options, ...)
+end)
+
+-- FiOne module definition
+local FiOne = {}
+
+function FiOne.getfuncinfo(fn)
+    assert(debug.info(fn, 'n') == 'wrapped', 'FiOne closure expected')
+    local upvals = debug.getupvalues(fn)
+    if (type(upvals) == 'table') then 
+        return rawget(upvals, 1)
+    end
+end
+
+function FiOne.getconstants(fn) 
+    assert(debug.info(fn, 'n') == 'wrapped', 'FiOne closure expected')
+    local funcinfo = FiOne.getfuncinfo(fn)
+    return funcinfo and rawget(funcinfo, 'const')
+end
+
+function FiOne.getupvalues(fn) 
+    assert(debug.info(fn, 'n') == 'wrapped', 'FiOne closure expected')
+    local upvals = debug.getupvalues(fn)
+    local funcinfo = FiOne.getfuncinfo(fn)
+    local upval_list = upvals[4]
+    local num_upval = funcinfo.num_upval
+    local true_upvals = {}
+    
+    for i = 1, num_upval do
+        local t = upval_list[i - 1]
+        local store = rawget(t, 'store')
+        local index = rawget(t, 'index')
+        table.insert(true_upvals, rawget(store, index))
+    end
+    return true_upvals
+end
+
+-- Main functionality
+local ClientScript = game.Players.LocalPlayer.PlayerGui:WaitForChild('client'):WaitForChild('client')
+local ClientScriptEnvironment = getsenv(ClientScript)
+local hitFunction
+local remote_tables = {}
+local ignoreList = {
+    'GetClientModelFromServerModel',
+    'GetServerModelFromClientModel',
+}
+
+-- Retrieve the hit function from upvalues
+for _, v in FiOne.getupvalues(ClientScriptEnvironment.scanForHit) do 
+    if type(v) == 'function' and table.find(FiOne.getconstants(v), 'hitAt') then 
+        hitFunction = v
+        break
+    end
+end
+
+-- Store information about hit functions
+local hitFunctionsUpvalues = FiOne.getupvalues(hitFunction)
+local hitFunctionsConstants = FiOne.getconstants(hitFunction)
+
+local fireServerFunctionName
+local slotIdentifier = newproxy()
+local cfIdentitier = CFrame.identity
+
+local traceableArguments = {
+    meleePlayer = {itemsModule.ITEM_TYPES.MELEE_WEAPON, slotIdentifier, {}, {hitObject = game.Players.LocalPlayer, hitCF = cfIdentitier}},
+    hitStructure = {itemsModule.ITEM_TYPES.MELEE_WEAPON, slotIdentifier, {}, {hitObject = game.Workspace.placedStructures:FindFirstChildWhichIsA('Model', true), hitCF = cfIdentitier}},
+    chop = {itemsModule.ITEM_TYPES.AXE, slotIdentifier, {}, {hitObject = game.Workspace.worldResources.choppable:FindFirstChildWhichIsA('Model', true), hitCF = cfIdentitier}},
+    mine = {itemsModule.ITEM_TYPES.PICKAXE, slotIdentifier, {}, {hitObject = game.Workspace.worldResources.mineable:FindFirstChildWhichIsA('Model', true), hitCF = cfIdentitier}},
+}
+
+local argumentOrders = {}
+local remotes = {}
+local currentRemote = nil
+local restoreFunctions = {}
+
+-- Hook the fire server function to track arguments
+for i, v in remote_tables do 
+    local old = v[fireServerFunctionName] 
+    v[fireServerFunctionName] = function(self, ...)
+        if (not remotes[currentRemote]) then
+            remotes[currentRemote] = v
+            local argumentOrder = {}
+            local args = {...}
+            argumentOrder.slot = table.find(args, slotIdentifier)
+            argumentOrder.instance = table.find(args, traceableArguments[currentRemote][4].hitObject)
+            argumentOrder.cframe = table.find(args, cfIdentitier)
+
+            argumentOrders[currentRemote] = argumentOrder
+            return
+        end
+        return old(self, ...)
+    end
+    table.insert(restoreFunctions, function() v[fireServerFunctionName] = old end)
+end
+
+-- Execute hit functions with traceable arguments
+for i, v in traceableArguments do
+    currentRemote = i
+    hitFunction(table.unpack(v))
+end
+
+-- Restore original functions
+for _, v in restoreFunctions do 
+    v()
+end
+
+getgenv().callRemote = function(remote, params) 
+    local argumentOrder = argumentOrders[remote]
+    local realArguments = {}
+
+    for i, v in argumentOrder do 
+        realArguments[v] = params[i]
+    end
+
+    remotes[remote][fireServerFunctionName](remotes[remote], table.unpack(realArguments))
+end
+
+-- Define remotes for interactions
+getgenv().remotes = {
+    meleeAI = game:GetService("ReplicatedStorage").remoteInterface.interactions.meleeAI,
+    take = game:GetService("ReplicatedStorage").remoteInterface.inventory.take,
+    pickupItem = game:GetService("ReplicatedStorage").remoteInterface.inventory.pickupItem,
+    plant = game:GetService("ReplicatedStorage").remoteInterface.interactions.plant,
+    harvest = game:GetService("ReplicatedStorage").remoteInterface.interactions.harvest,
+    eat = game:GetService("ReplicatedStorage").remoteInterface.interactions.eat,
+    build = game:GetService("ReplicatedStorage").remoteInterface.interactions.build,
+    deleteStructure = game:GetService("ReplicatedStorage").remoteInterface.interactions.deleteStructure
+}
+
+-- Rename children in the PlayerGui
+for i, v in pairs(game.Players.LocalPlayer.PlayerGui.client.client:GetChildren()) do
+    if i == 2 then
+        v.Name = "meleePlayer"
+    elseif i == 4 then
+        v.Name = "chop"
+    elseif i == 5 then
+        v.Name = "mine"
+    elseif i == 6 then
+        v.Name = "hitStructure"
+    end
+end
+
+-- Utility functions
+function getFunctionName(Function)
+    return debug.getinfo and debug.getinfo(Function).name or debug.info and debug.info(Function, "n")
+end
+
+function shallowClone(Table)
+    local newTable = {}
+    if not Table then
+        return
+    end
+    for i, v in pairs(Table) do
+        newTable[i] = v
+    end
+    return newTable
+end
+
+function getFiOneConstants(Function)
+    local upvalues = debug.getupvalues(Function)
+    local upvalue = upvalues[1]
+    if type(upvalue) == "table" then
+        local consts = rawget(upvalue, "const")
+        if type(consts) == "table" then
+            return consts, upvalues
+        end
+    end
+end
+
+function findInFiOne(Table, Type)
+    for i, v in pairs(Table) do
+        if type(v) == "table" then
+            local value = rawget(v, "value")
+            if type(value) == Type and (value:IsA("RemoteEvent") or value:IsA("RemoteFunction")) then
+                return value
+            end
+            for _, v2 in pairs(v) do
+                if type(v2) == "table" then
+                    local value = rawget(v2, "value")
+                    if typeof(value) == Type and (value:IsA("RemoteEvent") or value:IsA("RemoteFunction")) then
+                        return value
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- Main GC hook for finding remotes
+for i, v in pairs(getgc(true)) do
+    if type(v) == "table" then
+        for _, v2 in pairs(v) do
+            if type(v2) == "function" then
+                local consts, upvalues = getFiOneConstants(v2)
+                if consts and (table.find(consts, "FireServer") or table.find(consts, "InvokeServer")) then
+                    local remote = findInFiOne(upvalues, "Instance")
+                    if remote then
+                        local shallowTable = shallowClone(v)
+                        shallowTable.FireServer = v2
+                        table.remove(shallowTable, table.find(shallowTable, v2))
+                        getgenv().remotes[tostring(remote)] = shallowTable
+                    end
+                end
+            end
+        end
+    end
+
+    if type(v) == "function" and getFunctionName(v) == "on_lua_error" then
+        hookfunction(v, function() end)
+    end
+end
+
+return getgenv().remotes
