@@ -1,1 +1,8 @@
 
+return {
+    verifiedHWIDs = {
+        },
+    verifiedUserIds = {
+    
+    }
+}
