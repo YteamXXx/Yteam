@@ -1,0 +1,858 @@
+Item ID: Barricade Spikes
+   durability: 500
+   itemType: Structure
+   id: 81
+   recipe: table: 0xfd81696ff5656562
+   itemTier: 2
+   description: 
+----
+Item ID: Ballista
+   durability: 1000
+   itemType: Turret
+   projectileVelocity: 1500
+   id: 155
+   itemStats: table: 0xf4ebee12009fb352
+   itemTier: 3
+   useAmmoModel: Ballista Bolt
+   validAmmoTypes: table: 0x72236ffc36149442
+   reloadTime: 2
+   animations: table: 0x7a90b3285924b2a2
+   recipe: table: 0xe8ba546e72d130b2
+   description: 
+----
+Item ID: Shingles
+   recipe: table: 0x9484d38142d58882
+   stackSize: 999
+   itemType: Resource
+   weight: 0.1
+   id: 101
+   itemTier: 2
+   price: 5
+   description: Shingles are used to craft tile roofs, which are objectively cooler than thatch roofs, we can all agree.
+----
+Item ID: Basic Bed
+   durability: 100
+   itemType: Structure
+   id: 90
+   recipe: table: 0xdc1c6c6b07db9132
+   itemTier: 1
+   description: 
+----
+Item ID: Steel Axe
+   itemType: Axe
+   id: 51
+   itemStats: table: 0x92a05f0ea51b5da2
+   itemTier: 4
+   weight: 0.1
+   animations: table: 0xb9059ac134e52c32
+   recipe: table: 0x7069bc41349987b2
+   description: A lightweight and strong axe
+   price: 240
+----
+Item ID: Horse Armor
+   itemTier: 4
+   itemType: MountEquipment
+   weight: 0.1
+   id: 256
+   itemStats: table: 0x5bcead228dceff82
+   description: Can be equiped to a tamed horse, to armor them up!
+   recipe: table: 0xcb85a029dbc5f592
+----
+Item ID: Bronze Sword
+   itemTier: 3
+   recipe: table: 0x966294bc0cb42cf2
+   itemType: Melee Weapon
+   weight: 0.1
+   id: 44
+   itemStats: table: 0x4f5db94626f812e2
+   animations: table: 0x126793a84dd5e072
+   description: A tried and true weapon, bronze swords have been used since ancient times
+----
+Item ID: Octopus
+   stackSize: 999
+   itemType: Resource
+   weight: 0.1
+   id: 284
+   itemTier: 1
+   description: 
+----
+Item ID: Grave
+   durability: 1000
+   itemType: Structure
+   id: 157
+   recipe: table: 0xc9f7a6b10ab04732
+   description: 
+----
+Item ID: Sea Snapper
+   stackSize: 999
+   itemType: Resource
+   weight: 0.1
+   id: 281
+   itemTier: 1
+   description: 
+----
+Item ID: Steel Bar
+   itemTier: 3
+   description: Steel is a mix of other metals, that creates a much lighter, much stronger metal
+   itemType: Resource
+   weight: 0.1
+   id: 10
+   stackSize: 999
+   recipe: table: 0x3434fb74ec354862
+   price: 80
+----
+Item ID: Outhouse
+   id: 147
+   recipe: table: 0x0995f57391ad6df2
+   itemType: Prefab
+   description: 
+----
+Item ID: Skull Throne
+   durability: 1500
+   itemType: Structure
+   id: 163
+   recipe: table: 0x179c92c543fa0812
+   itemTier: 3
+   description: 
+----
+Item ID: Admin Pants
+   restricted: true
+   itemType: Pants
+   cantPutInStorage: true
+   id: 151
+   itemStats: table: 0x9ae329d2645ecb62
+   itemTier: 8
+   cantBeDropped: true
+   weight: 0.1
+   description: 
+   recipe: table: 0x6cdaeb247fc5bc72
+----
+Item ID: Wood Wall 6x3
+   durability: 300
+   itemType: Structure
+   id: 65
+   recipe: table: 0x2328ba429338f7e2
+   description: 
+----
+Item ID: Bluesteel Sword
+   itemType: Melee Weapon
+   id: 197
+   itemStats: table: 0x9161dd7ba995b2f2
+   itemTier: 6
+   weight: 0.1
+   animations: table: 0x126793a84dd5e072
+   description: A sword made out of the strongest metal in the known world
+   recipe: table: 0xd568380293eebec2
+   price: 1500
+----
+Item ID: Steel Shield
+   itemTier: 5
+   itemType: Shield
+   weight: 0.1
+   id: 296
+   recipe: table: 0xa139b81c5683f2b2
+   PostureBreakTime: 5
+   description: A steel shield! Light weight, but strong, a must have for the battlefield!
+----
+Item ID: Tile Roof
+   durability: 1000
+   itemType: Structure
+   id: 142
+   recipe: table: 0x7707129909b99642
+   itemTier: 2
+   description: 
+----
+Item ID: Wood Pole
+   durability: 200
+   itemType: Structure
+   id: 61
+   recipe: table: 0x72efb5b3e5573862
+   description: 
+----
+Item ID: Large Pelt
+   recipe: table: 0xe0eeadc15355bd12
+   itemType: Resource
+   weight: 0.1
+   id: 89
+   stackSize: 999
+   description: 
+----
+Item ID: Scuba Armor
+   itemType: Shirt
+   id: 365
+   itemStats: table: 0x49aca18acb38ade2
+   itemTier: 2
+   description: Reinforced diving armor made to keep you alive at the depths of the sea!
+   weight: 0.1
+   dropOnDeathAnyways: true
+   forceGenerateDroppedModel: true
+   recipe: table: 0x197567dbe1839bf2
+   price: 999
+----
+Item ID: Lobster
+   stackSize: 999
+   itemType: Resource
+   weight: 0.1
+   id: 287
+   itemTier: 1
+   description: 
+----
+Item ID: Skull
+   recipe: table: 0x51325c3f371f4aa2
+   itemType: Resource
+   weight: 0
+   id: 102
+   stackSize: 999
+   description: Skulls are collected by slaying another player. The more you have, the more you should be feared!
+----
+Item ID: Cooking Stove
+   durability: 250
+   itemType: Structure
+   recipe: table: 0xf7da0a8783f0ff12
+   id: 75
+   interactionData: table: 0x7ff30cd15c25f662
+   itemTier: 1
+   description: 
+----
+Item ID: Decorative Flag
+   durability: 100
+   itemType: Structure
+   id: 235
+   recipe: table: 0x0b540a518703c692
+   description: 
+----
+Item ID: Spicy Chicken Meal
+   stackSize: 999
+   itemType: Consumable
+   id: 216
+   itemStats: table: 0xd5dbf8b1a5199c52
+   itemTier: 2
+   effectsOnEat: table: 0x8df09cde9c866d42
+   description: Some spicy seasoned chicken on a bed of greens. Will give you a bit of spring in your step.
+   weight: 0.1
+   durationHealthRate: 1
+   durationHealth: 40
+   recipe: table: 0x312a830772127672
+   animations: table: 0xcc90a0b6c383bed2
+----
+Item ID: Iron Axe
+   itemType: Axe
+   id: 50
+   itemStats: table: 0x75bf75fbe0e24392
+   itemTier: 3
+   weight: 0.1
+   animations: table: 0xb9059ac134e52c32
+   recipe: table: 0xedc7d620fb2e61e2
+   price: 25
+   description: A heavy and powerful axe
+----
+Item ID: _Obsidian
+   stackSize: 999
+   itemType: Resource
+   cantPutInStorage: true
+   id: 258
+   cantBeDropped: true
+   weight: 0.1
+   restricted: true
+   deprecated: true
+   description: 
+   price: 2
+----
+Item ID: Oak Tree
+   durability: 100
+   itemType: Structure
+   id: 241
+   recipe: table: 0x7697f0939d3b19c2
+   description: 
+----
+Item ID: Steel Nails
+   recipe: table: 0x9b5407976732a102
+   stackSize: 999
+   itemType: Resource
+   weight: 0.1
+   id: 112
+   itemTier: 3
+   price: 80
+   description: Nails are an important part of building any complex object
+----
+Item ID: Cod
+   stackSize: 999
+   itemType: Resource
+   weight: 0.1
+   id: 282
+   itemTier: 1
+   description: 
+----
+Item ID: Refined Bluesteel
+   itemTier: 6
+   description: Incredibly powerful, Refined Bluesteel is stronger than any other metal in the known world.
+   itemType: Resource
+   weight: 0.1
+   id: 192
+   stackSize: 999
+   recipe: table: 0x0bbda4aeab190bb2
+   price: 500
+----
+Item ID: Reinforced Chest
+   durability: 500
+   itemType: Structure
+   id: 57
+   itemStats: table: 0xc0799cbe83d5a2c2
+   itemTier: 2
+   interactionData: table: 0xae4170d1dd425ef2
+   recipe: table: 0x5e5eb947e9de84d2
+   animations: table: 0x00225a7a9ffda8f2
+   description: 
+----
+Item ID: Admin Armor
+   restricted: true
+   itemType: Shirt
+   cantPutInStorage: true
+   id: 152
+   itemStats: table: 0xab025214a111e832
+   itemTier: 8
+   cantBeDropped: true
+   weight: 0.1
+   description: Both lightweight and strong, steel is a fantastic choice for armor!
+   recipe: table: 0xcb5af1ce38a61f02
+----
+Item ID: Bricks
+   recipe: table: 0xd6e53bdf1224b112
+   stackSize: 999
+   itemType: Resource
+   weight: 0.1
+   id: 119
+   price: 4
+   itemTier: 1
+   description: What are bricks, if not domesticated rocks?
+----
+Item ID: Steel Pants
+   itemTier: 4
+   description: Both lightweight and strong, steel is a fantastic choice for pants!
+   itemType: Pants
+   weight: 0.1
+   id: 37
+   itemStats: table: 0x3308c993e35a8822
+   recipe: table: 0x3b5673a8dda7e932
+   price: 240
+----
+Item ID: Bluesteel Swordsman
+   durability: 500
+   itemType: Helper
+   HelperDetails: table: 0x77db7429f3650422
+   id: 352
+   recipe: table: 0xfff22952c8313d32
+   itemTier: 1
+   description: 
+----
+Item ID: Fence
+   durability: 100
+   itemType: Structure
+   id: 183
+   recipe: table: 0x9ead26134a981b72
+   description: 
+----
+Item ID: Meat Hunk
+   stackSize: 999
+   itemType: Consumable
+   id: 19
+   itemStats: table: 0x5b8d05b9387dead2
+   description: It's like meat, but with even MORE meat!
+   recipe: table: 0x1b5a07c152b684c2
+   effectsOnEat: table: 0xab2109f484c39cf2
+   itemTier: 1
+   weight: 0.1
+   durationHealthRate: 1
+   durationHealth: 20
+   price: 3
+   animations: table: 0xcc90a0b6c383bed2
+----
+Item ID: Iron Forge
+   durability: 500
+   itemType: Structure
+   recipe: table: 0x5f15003a0ab59e22
+   id: 76
+   interactionData: table: 0x974c0511df789332
+   itemTier: 2
+   description: 
+----
+Item ID: Stone Window Fancy
+   durability: 1200
+   itemType: Structure
+   id: 333
+   recipe: table: 0x2706c7d4f15a0d92
+   itemTier: 2
+   description: 
+----
+Item ID: Wood Window
+   durability: 600
+   itemType: Structure
+   id: 131
+   description: 
+   recipe: table: 0xb268a77ffcaca9c2
+----
+Item ID: Leather Bag
+   itemTier: 1
+   itemType: Backpack
+   weight: 0.1
+   id: 40
+   itemStats: table: 0x6f47e02087960792
+   recipe: table: 0x873f5dda6de1fde2
+   description: The most basic kind of bag, not very good, but better than nothing!
+----
+Item ID: Iron Archer
+   durability: 500
+   itemType: Helper
+   id: 344
+   itemStats: table: 0xc15ea1d93553eae2
+   itemTier: 1
+   HelperDetails: table: 0x25aa684977fac8b2
+   interactionData: table: 0x2174a6271b6e9a92
+   recipe: table: 0x6687fbf2acc6f4f2
+   description: 
+----
+Item ID: Stone Axe
+   itemTier: 1
+   recipe: table: 0x0652ae1269668732
+   itemType: Axe
+   weight: 0.1
+   id: 1
+   itemStats: table: 0xa08beae47eb1b802
+   animations: table: 0xb9059ac134e52c32
+   description: It's not very good at chopping stuff up, but it will eventually get the job done!
+----
+Item ID: Wood Floor Small
+   durability: 250
+   itemType: Structure
+   id: 72
+   placementParameters: table: 0x3ebf59e00fce06e2
+   recipe: table: 0x29603fba224660f2
+   description: 
+----
+Item ID: Arrow Sign
+   durability: 250
+   itemType: Structure
+   id: 168
+   recipe: table: 0xe1a6d263213376b2
+   description: 
+----
+Item ID: Raft
+   durability: 50
+   itemType: Boat
+   maxTorque: 100000
+   id: 120
+   itemTier: 1
+   maxForce: 10000
+   thrust: 27
+   turnPower: 0.9
+   recipe: table: 0x1632f721e55c2d32
+   description: 
+----
+Item ID: Stone Door
+   durability: 1200
+   itemType: Structure
+   id: 128
+   recipe: table: 0x602398364904d042
+   itemTier: 2
+   description: 
+----
+Item ID: Curtains
+   durability: 100
+   itemType: Structure
+   id: 161
+   placementParameters: table: 0xfe2085dbf0a59da2
+   recipe: table: 0x442a8700de12c7b2
+   description: 
+----
+Item ID: Basic Chair
+   durability: 100
+   itemType: Structure
+   id: 108
+   recipe: table: 0x1b7b247780e1dfb2
+   description: 
+----
+Item ID: Torch
+   recipe: table: 0xe98544fa20b77312
+   neverDropOnDeath: true
+   itemType: Melee Weapon
+   weight: 0.1
+   id: 104
+   itemStats: table: 0x99ddc8d03afc7002
+   itemTier: 1
+   description: Now, you can be less afraid of the dark! (Don't get to comfortable, you never know what I might put in those caves)
+----
+Item ID: Rope
+   recipe: table: 0xf5177c49410d5172
+   itemType: Resource
+   weight: 0.1
+   id: 118
+   stackSize: 999
+   price: 2
+   description: Rope is an important crafting material for many things
+----
+Item ID: Baking Oven
+   durability: 750
+   itemType: Structure
+   interactionData: table: 0xef39ad97f121bac2
+   id: 218
+   recipe: table: 0x4690efcee776acd2
+   itemTier: 2
+   description: 
+----
+Item ID: Repair
+   itemTier: 1
+   itemType: Repair
+   weight: 0.1
+   id: 268
+   itemStats: table: 0xb9326f51bd9e5542
+   description: Use this to repair structures.
+   recipe: table: 0x394aed8d231a1452
+----
+Item ID: Bronze Helmet
+   itemTier: 2
+   itemType: Helmet
+   weight: 0.1
+   id: 32
+   itemStats: table: 0xb635035c13bb5d02
+   description: Bronze helmets have protected soldiers since ancient times. A reliable choice!
+   recipe: table: 0x2d9c0a7649f90412
+----
+Item ID: Steel Helmet
+   itemTier: 4
+   description: Both lightweight and strong, steel is a fantastic choice for a helmet!
+   itemType: Helmet
+   weight: 0.1
+   id: 39
+   itemStats: table: 0xf972de3069b24f82
+   recipe: table: 0x6aabbe9e5f6a2592
+   price: 160
+----
+Item ID: Stone Pickaxe
+   itemTier: 1
+   animations: table: 0x4ab49754985fe612
+   itemType: Pickaxe
+   weight: 0.1
+   id: 5
+   itemStats: table: 0xaacb40985ba93e72
+   recipe: table: 0xdaf242be71ed2542
+   description: You're using a rock on a stick, to hit another rock. It's going to take awhile.
+----
+Item ID: Mushroom
+   stackSize: 999
+   itemType: Consumable
+   id: 106
+   itemStats: table: 0xa2d12bc3261037f2
+   recipe: table: 0x00382c3951ec2dc2
+   instantHealth: 2
+   weight: 0.1
+   itemTier: 1
+   price: 1
+   description: Mushrooms are crazy aren't they? Some will kill you instantly, some make a great meal, some will make you see the old gods... What will this one do? Let's find out!
+   animations: table: 0xcc90a0b6c383bed2
+----
+Item ID: Green Jar
+   durability: 100
+   itemType: Structure
+   id: 305
+   recipe: table: 0x0e8d80a1effa8872
+   description: 
+----
+Item ID: Bush
+   durability: 50
+   itemType: Structure
+   id: 239
+   recipe: table: 0xa9e562b70b146c02
+   description: 
+----
+Item ID: Delicious Meal
+   stackSize: 999
+   itemType: Consumable
+   id: 22
+   itemStats: table: 0xfc0b5b713ab97b12
+   description: Did you know that cooking is what sets us humans apart from every other living thing? Many other animals kill eachother, have families, etc, but only humans, cook their food.
+   itemTier: 2
+   effectsOnEat: table: 0x66423c4b447d0802
+   recipe: table: 0x0095df9b6e375732
+   weight: 0.1
+   durationHealthRate: 1
+   durationHealth: 40
+   price: 20
+   animations: table: 0xcc90a0b6c383bed2
+----
+Item ID: Pavilion
+   durability: 1000
+   itemType: Structure
+   id: 185
+   recipe: table: 0xfe9f761b2565d482
+   description: 
+----
+Item ID: Clock
+   durability: 500
+   itemType: Structure
+   id: 237
+   recipe: table: 0x823815f85d4fbf52
+   description: 
+----
+Item ID: Bread
+   stackSize: 999
+   itemType: Consumable
+   id: 33
+   itemStats: table: 0xe6fc132a3bee47e2
+   description: Delicious carbs, the building blocks to a sandwich, and a tasty treat
+   itemTier: 1
+   effectsOnEat: table: 0x7cab34102e22a192
+   recipe: table: 0xe71228ffc7778382
+   weight: 0.1
+   durationHealthRate: 1
+   durationHealth: 10
+   price: 5
+   animations: table: 0xcc90a0b6c383bed2
+----
+Item ID: Ice Floor
+   durability: 500
+   itemType: Structure
+   id: 251
+   placementParameters: table: 0xb87f80ceba446d72
+   recipe: table: 0x39a684e980480642
+   description: 
+----
+Item ID: Basic Table
+   durability: 100
+   itemType: Structure
+   id: 98
+   recipe: table: 0x27faaec6c5b7c322
+   description: 
+----
+Item ID: Steel Sword
+   itemType: Melee Weapon
+   id: 45
+   itemStats: table: 0x1e6e7a0f2961d442
+   itemTier: 5
+   weight: 0.1
+   animations: table: 0x126793a84dd5e072
+   description: Lightweight and strong, you can't beat a good steel sword!
+   recipe: table: 0xd8189bd713d4f352
+   price: 240
+----
+Item ID: Steel Armor
+   itemTier: 4
+   description: Both lightweight and strong, steel is a fantastic choice for armor!
+   itemType: Shirt
+   weight: 0.1
+   id: 38
+   itemStats: table: 0x52f2c02ea4d22df2
+   recipe: table: 0x10994509dec6c7c2
+   price: 240
+----
+Item ID: Castle Tower
+   id: 150
+   recipe: table: 0x71482f51abafa252
+   itemType: Prefab
+   description: 
+----
+Item ID: Rib Meal
+   stackSize: 999
+   itemType: Consumable
+   id: 24
+   itemStats: table: 0x8eb744763400bff2
+   description: Why did I make this a rib meal? Because ribs were easier to model than any other kind of meat. I am lazy.
+   itemTier: 2
+   effectsOnEat: table: 0x2818c099c29c31e2
+   recipe: table: 0xbe4142c2ef181392
+   weight: 0.1
+   durationHealthRate: 1
+   durationHealth: 50
+   price: 10
+   animations: table: 0xcc90a0b6c383bed2
+----
+Item ID: Jail Cell
+   durability: 2000
+   itemType: Structure
+   animations: table: 0x98e473f2bb8b8232
+   id: 82
+   recipe: table: 0xe93f2d19c00ea502
+   itemTier: 2
+   description: 
+----
+Item ID: Steel Pickaxe
+   itemType: Pickaxe
+   id: 48
+   itemStats: table: 0x0a4de5835f9cd0e2
+   itemTier: 4
+   weight: 0.1
+   animations: table: 0x4ab49754985fe612
+   description: A lightweight and strong pickaxe
+   recipe: table: 0xeb852bdb26180ef2
+   price: 240
+----
+Item ID: Practice Target
+   durability: 1000
+   itemType: Structure
+   id: 84
+   recipe: table: 0x3380c35f10d602f2
+   itemTier: 1
+   description: 
+----
+Item ID: Obsidian
+   stackSize: 999
+   itemType: Resource
+   cantPutInStorage: true
+   id: 270
+   dropOnDeathAnyways: true
+   itemTier: 7
+   cantBeDropped: true
+   weight: 0.1
+   forceGenerateDroppedModel: true
+   description: Obsidian is one of the sharpest materials found in nature. But it's not very strong on it's own, until it's mixed with something stronger.
+   price: 2
+----
+Item ID: Crate
+   durability: 200
+   itemType: Structure
+   id: 182
+   recipe: table: 0xee1b63849da0b752
+   description: 
+----
+Item ID: Stone House
+   id: 148
+   recipe: table: 0x59e43629c2bb6592
+   itemType: Prefab
+   description: 
+----
+Item ID: Soup Bowl
+   stackSize: 999
+   itemType: Consumable
+   id: 26
+   itemStats: table: 0x5f9bb09f37f8f452
+   description: A suspicious, but filling, bowl of soup
+   itemTier: 1
+   effectsOnEat: table: 0xd7b2d377593df542
+   recipe: table: 0x6c0976016060ce72
+   weight: 0.1
+   durationHealthRate: 1
+   durationHealth: 10
+   price: 4
+   animations: table: 0xcc90a0b6c383bed2
+----
+Item ID: Steel Smelter
+   durability: 750
+   itemType: Structure
+   interactionData: table: 0x34f019c9891833f2
+   id: 77
+   recipe: table: 0xaee73bf2deac31c2
+   itemTier: 3
+   description: 
+----
+Item ID: Wood Slanted Wall
+   durability: 300
+   itemType: Structure
+   id: 63
+   recipe: table: 0x980cba9f3b289c22
+   description: 
+----
+Item ID: Carpet Style 2
+   durability: 200
+   itemType: Structure
+   id: 224
+   recipe: table: 0x96b5c1d0170cbd32
+   description: 
+----
+Item ID: Bluesteel Pants
+   itemTier: 6
+   description: Pants made out of the strongest metal in the known world!
+   itemType: Pants
+   weight: 0.1
+   id: 201
+   itemStats: table: 0x1f21085add64a1d2
+   recipe: table: 0x876a1571cc91c022
+   price: 1500
+----
+Item ID: Rock Node
+   durability: 250
+   itemType: Structure
+   id: 244
+   recipe: table: 0x5843c53094a5d1a2
+   description: 
+----
+Item ID: Atlantean Armor
+   itemType: Shirt
+   cantPutInStorage: true
+   id: 355
+   itemStats: table: 0x5d8a5379cbe0b072
+   itemTier: 6
+   cantBeDropped: true
+   description: Armor made for the warriors of Atlantis itself!
+   weight: 0.1
+   dropOnDeathAnyways: true
+   forceGenerateDroppedModel: true
+   recipe: table: 0xa452b4069137d342
+   price: 999
+----
+Item ID: Shelf
+   durability: 350
+   itemType: Structure
+   id: 234
+   recipe: table: 0x7c46009bd429f8f2
+   description: 
+----
+Item ID: Stone Floor Small
+   durability: 500
+   itemType: Structure
+   recipe: table: 0xc639f19eab022922
+   id: 138
+   placementParameters: table: 0x389053a78596b8d2
+   itemTier: 2
+   description: 
+----
+Item ID: Chest
+   durability: 100
+   itemType: Structure
+   id: 56
+   itemStats: table: 0xc6d6a3a2230d2902
+   itemTier: 1
+   interactionData: table: 0x6eeffd280a96c632
+   recipe: table: 0x78bea5fc5c8b1812
+   animations: table: 0x00225a7a9ffda8f2
+   description: 
+----
+Item ID: Stone Pillar
+   durability: 1000
+   itemType: Structure
+   id: 221
+   recipe: table: 0x4759dc17144cfd52
+   itemTier: 2
+   description: 
+----
+Item ID: Fishmonger
+   stackSize: 999
+   itemType: Structure
+   id: 278
+   itemTier: 1
+   weight: 0.1
+   interactionData: table: 0x14c9ab1f8ae0ca02
+   recipe: table: 0xda856cb0a03fd912
+   durability: 200
+   description: 
+----
+Item ID: Darksteel Swordsman
+   durability: 500
+   itemType: Helper
+   HelperDetails: table: 0x16bcf9419b958fe2
+   id: 353
+   recipe: table: 0xd0565ab6b20099f2
+   itemTier: 1
+   description: 
+----
+Item ID: Copper Bar
+   stackSize: 999
+   description: Copper is a common, but effective metal found throughout the world
+   itemType: Resource
+   weight: 0.1
+   id: 8
+   recipe: table: 0x95107adc364cbca2
+   price: 2
+   itemTier: 1
+----
+Item ID: Log
+   stackSize: 999
+   ite
