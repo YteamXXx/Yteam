@@ -1,0 +1,22 @@
+local whitelist = { 
+    "xyriko18",
+    "Username2",
+    "Username3"
+}
+local function isWhitelisted(username)
+    for _, name in ipairs(whitelist) do
+        if name == username then
+            return true
+        end
+    end
+    return false
+end
+
+local player = game.Players.LocalPlayer
+local username = player.Name
+if not isWhitelisted(username) then
+    player:Kick("BABI!")
+else
+ 
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/pamung231/Tesss/refs/heads/main/Huhehe"))()
+end
