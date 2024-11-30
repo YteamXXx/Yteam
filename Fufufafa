@@ -1,7 +1,7 @@
 local whitelist = {
     ["xyriko18"] = true,
-    ["HAHAhahaHaaaaHhhhhaa"] = true,
-    ["Username3"] = true
+    ["HAHAhahaHaaaaHhhhhaa1"] = true,
+    ["bebekbebek201"] = true
 }
 
 local function isWhitelisted(username)
