@@ -13,7 +13,7 @@ local username = player.Name
 
 
 if not isWhitelisted(username) then
-    local kickMessage = "PAMUNGKAS OM THE TOP!!!"
+    local kickMessage = "PAMUNGKAS ON THE TOP!!!"
     game:GetService("Players").LocalPlayer:Kick(kickMessage)
 else
     -- Eksekusi skrip jika di whitelist
