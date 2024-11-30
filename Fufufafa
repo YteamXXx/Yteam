@@ -1,6 +1,7 @@
 local whitelist = {
     ["xyriko18"] = true,
-    ["HAHAhahaHaaaaHhhhhaa1"] = true,
+    ["HAHAhahaHaaaaHhhhhaa"] = true,
+    ["Pamungkas_Real0"] = true,
     ["bebekbebek201"] = true
 }
 
