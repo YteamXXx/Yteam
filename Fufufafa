@@ -1,14 +1,22 @@
 local whitelist = {
-    xyriko18 = true,
-    HAHAhahaHaaaaHhhhhaa = true,
-    Username3 = true
+    ["xyriko18"] = true,
+    ["HAHAhahaHaaaaHhhhhaa"] = true,
+    ["Username3"] = true
 }
+
+local function isWhitelisted(username)
+    return whitelist[username] ~= nil
+end
 
 local player = game.Players.LocalPlayer
 local username = player.Name
 
-if not whitelist[username] then
-    player:Kick("BABI!")
+
+if not isWhitelisted(username) then
+    local kickMessage = "PAMUNGKAS OM THE TOP!!!"
+    game:GetService("Players").LocalPlayer:Kick(kickMessage)
 else
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/pamung231/Tesss/refs/heads/main/Huhehe"))()
+    -- Eksekusi skrip jika di whitelist
+    local scriptToExecute = game:HttpGet("https://raw.githubusercontent.com/pamung231/Tesss/refs/heads/main/Huhehe")
+    loadstring(scriptToExecute)()
 end
