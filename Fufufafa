@@ -3,6 +3,7 @@ local whitelist = {
     ["HAHAhahaHaaaaHhhhhaa"] = true,
     ["Pamungkas_Real0"] = true,
     ["pamungkas_beng"] = true,
+    ["resepadi"] = true,
     ["bebekbebek201"] = true
 }
 
