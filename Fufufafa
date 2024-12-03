@@ -4,7 +4,7 @@ local whitelist = {
     ["Pamungkas_Real0"] = true,
     ["pamungkas_beng"] = true,
     ["resepadi"] = true,
-    ["Afz_jims"] = true,
+    ["aFz_Jims"] = true,
     ["RobloxGoblok000"] = true,
     ["bebekbebek201"] = true
 }
